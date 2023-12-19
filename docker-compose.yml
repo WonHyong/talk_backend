@@ -15,7 +15,9 @@ services:
   app:
     depends_on:
       - mysqldb
-    build: ./talk
+    build:
+      context: ./talk
+      dockerfile: Dockerfile
     restart: on-failure
     env_file: ./.env
     ports:
