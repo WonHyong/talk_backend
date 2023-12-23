@@ -3,6 +3,7 @@ package com.wonhyong.talk.board.controller;
 import com.wonhyong.talk.board.model.Board;
 import com.wonhyong.talk.board.repository.BoardRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,12 +15,15 @@ import java.util.Optional;
 @RequestMapping("/api/boards")
 public class BoardController {
 
-    @Autowired
-    BoardRepository boardRepository;
+    private final BoardRepository boardRepository;
 
-   @GetMapping
-    public Iterable<Board> getAllBoards() {
-        return boardRepository.findAll();
+    public BoardController(BoardRepository boardRepository) {
+        this.boardRepository = boardRepository;
+    }
+
+    @GetMapping
+    public Iterable<Board> getAllBoards(Pageable pageable) {
+        return boardRepository.findSliceBy(pageable);
     }
 
     @GetMapping("/{id}")
@@ -35,10 +39,8 @@ public class BoardController {
     @PutMapping("/{id}")
     public ResponseEntity<Board> putBoard(@PathVariable("id") long id, @RequestBody Board board) {
         return (boardRepository.existsById(id))
-                ? new ResponseEntity<>(boardRepository.save(board),
-                HttpStatus.OK)
-                : new ResponseEntity<>(boardRepository.save(board),
-                HttpStatus.CREATED);
+                ? new ResponseEntity<>(boardRepository.save(board), HttpStatus.OK)
+                : new ResponseEntity<>(boardRepository.save(board), HttpStatus.CREATED);
     }
 
     @DeleteMapping("/{id}")

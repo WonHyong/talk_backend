@@ -16,21 +16,4 @@ public class WonHyongTalkApplication {
     public static void main(String[] args) {
         SpringApplication.run(WonHyongTalkApplication.class, args);
     }
-
-
-    // ************
-    // sample data
-
-    @Autowired
-    private BoardRepository boardRepository;
-
-    @Bean
-    InitializingBean sendDatabase() {
-        return () -> boardRepository.saveAll(List.of(
-                new Board("test1", "inho babo"),
-                new Board("test2", "seunghoon babo")
-        ));
-    }
-
-    // ************
 }

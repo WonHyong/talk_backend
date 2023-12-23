@@ -1,38 +1,47 @@
 package com.wonhyong.talk.board.model;
 
-import lombok.Getter;
-import lombok.Setter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
+import java.util.Date;
 
+@Data
 @Getter
 @Entity
 @Table(name = "boards")
+@RequiredArgsConstructor
+@NoArgsConstructor
+@JsonPropertyOrder({ "title", "createdTime", "updatedTime", "content"})
 public class Board {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @JsonIgnore
     private long id;
 
-    @Column(name = "title")
+    @NonNull
+    @Column
     @Setter
     private String title;
 
-    @Column(name = "description")
+    @NonNull
+    @Column
     @Setter
-    private String description;
+    private String content;
 
-    public Board() {
-    }
+    @CreationTimestamp
+    @Column(name = "created_time")
+    @JsonProperty("created_time")
+    private Date createdTime;
 
-    public Board(String title, String description) {
-        this.title = title;
-        this.description = description;
-    }
-
-    @Override
-    public String toString() {
-        return "Board [id=" + id + ", title=" + title + ", desc=" + description + "]";
-    }
-
+    @UpdateTimestamp
+    @Column(name = "updated_time")
+    @JsonProperty("updated_time")
+    private Date updatedTime;
 }
