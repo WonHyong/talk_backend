@@ -3,7 +3,6 @@ package com.wonhyong.talk.board.dto;
 
 import com.wonhyong.talk.board.entity.Post;
 import lombok.AllArgsConstructor;
-import lombok.Data;
 import lombok.Getter;
 
 import java.time.format.DateTimeFormatter;

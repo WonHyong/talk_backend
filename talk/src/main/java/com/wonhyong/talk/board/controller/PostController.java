@@ -2,7 +2,6 @@ package com.wonhyong.talk.board.controller;
 
 import com.wonhyong.talk.board.dto.PostRequestDto;
 import com.wonhyong.talk.board.dto.PostResponseDto;
-import com.wonhyong.talk.board.repository.PostRepository;
 import com.wonhyong.talk.board.service.PostService;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Pageable;

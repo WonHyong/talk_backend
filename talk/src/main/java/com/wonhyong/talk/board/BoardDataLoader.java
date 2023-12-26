@@ -20,7 +20,7 @@ public class BoardDataLoader {
     private void loadBoardData() {
         List<Post> sampleBoards = new ArrayList<>(100);
 
-        for (int i=0; i<100; i++) {
+        for (int i = 0; i < 100; i++) {
             Post post = Post.builder()
                     .title("Title " + i)
                     .content("Content " + i)
