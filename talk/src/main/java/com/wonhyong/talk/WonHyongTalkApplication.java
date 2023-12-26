@@ -6,6 +6,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.annotation.Bean;
 
 import java.util.List;
@@ -19,18 +20,8 @@ public class WonHyongTalkApplication {
 
 
     // ************
-    // sample data
+    // no sample data
 
-    @Autowired
-    private BoardRepository boardRepository;
-
-    @Bean
-    InitializingBean sendDatabase() {
-        return () -> boardRepository.saveAll(List.of(
-                new Board("test1", "inho babo"),
-                new Board("test2", "seunghoon babo")
-        ));
-    }
 
     // ************
 }

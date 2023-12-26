@@ -1,5 +1,6 @@
 package com.wonhyong.talk.board.model;
 
+import com.wonhyong.talk.member.domain.Member;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -17,6 +18,10 @@ public class Board {
     @Column(name = "title")
     @Setter
     private String title;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id")
+    private Member member; //주문 회원
 
     @Column(name = "description")
     @Setter
