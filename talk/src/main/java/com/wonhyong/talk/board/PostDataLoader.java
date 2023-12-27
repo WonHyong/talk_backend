@@ -9,10 +9,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Component
-public class BoardDataLoader {
+public class PostDataLoader {
     private final PostRepository postRepository;
 
-    public BoardDataLoader(PostRepository postRepository) {
+    public PostDataLoader(PostRepository postRepository) {
         this.postRepository = postRepository;
     }
 
