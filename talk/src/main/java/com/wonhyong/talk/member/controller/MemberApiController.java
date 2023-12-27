@@ -1,15 +1,16 @@
 package com.wonhyong.talk.member.controller;
 
+import com.wonhyong.talk.board.model.Board;
 import com.wonhyong.talk.member.service.MemberService;
 import com.wonhyong.talk.member.domain.Member;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 
@@ -22,22 +23,25 @@ public class MemberApiController {
     private final MemberService memberService;
 
     @PostMapping(value = "/new")
-    public CreateMemberResponse create(@RequestBody @Valid CreateMemberRequest request) {
-        Member member = new Member();
-        member.setName(request.getName());
-        member.setPassword(request.getPassword());
-        Long id = memberService.join(member);
+    public String create(@RequestBody Member member) {
+        if (memberService.findByName(member.getName()) != null) {
+            return "failed";
+        }
+        // 저장
+        memberService.saveMember(member);
 
-        return new CreateMemberResponse(id);
+        return "Registration successful for user: " + member.getName();
     }
 
     @GetMapping
-    public Result membersV2() {
-        List<Member> findMembers = memberService.findMembers();
-        List<MemberDto> collect = findMembers.stream()
-                .map(m -> new MemberDto(m.getName(), m.getPassword()))
-                .collect(Collectors.toList());
-        return new Result(collect);
+    public Iterable<Member> members() {
+        return memberService.getAllMembers();
+    }
+
+    @PostMapping("/login")
+    public String login(@RequestParam String username, @RequestParam String password) {
+
+        return "Login successful for user: " + username;
     }
 
     @Data
