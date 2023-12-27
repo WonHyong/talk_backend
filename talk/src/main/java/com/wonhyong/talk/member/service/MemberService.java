@@ -2,32 +2,52 @@ package com.wonhyong.talk.member.service;
 
 import com.wonhyong.talk.member.domain.Member;
 import com.wonhyong.talk.member.repository.MemberRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
-@Transactional(readOnly = true)
-public class MemberService {
-    @Autowired
-    MemberRepository memberRepository;
-    /**
-     * 회원가입 */
-    @Transactional //변경
-    public Long join(Member member) {
-        validateDuplicateMember(member); //중복 회원 검증 memberRepository.save(member);
-        return member.getId();
-    }
-    private void validateDuplicateMember(Member member) {
-        List<Member> findMembers = memberRepository.findByName(member.getName());
-        if (!findMembers.isEmpty()) {
-            throw new IllegalStateException("이미 존재하는 회원입니다."); }
+@RequiredArgsConstructor
+public class MemberService{
+
+    private final MemberRepository memberRepository;
+    private final PasswordEncoder passwordEncoder;
+
+    public void saveMember(Member member) {
+        member.setPassword(passwordEncoder.encode(member.getPassword()));
+        memberRepository.save(member);
     }
 
-    public List<Member> findMembers() {
+    public Member findByName(String name) {
+        return memberRepository.findByName(name);
+    }
+    public Iterable<Member> getAllMembers() {
         return memberRepository.findAll();
     }
+
+    public Optional<Member> getMemberById(Long userId) {
+        return memberRepository.findById(userId);
+    }
+
+    public void deleteMember(Long userId) {
+        memberRepository.deleteById(userId);
+    }
+
+//    @Override
+//    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+//        Member member = memberRepository.findByName(username);
+//        if (member == null) {
+//            throw new UsernameNotFoundException("User not found with username: " + username);
+//        }
+//
+//        return User.withUsername(username)
+//                .password(member.getPassword())
+//                .roles("USER")
+//                .build();
+//    }
 
 }
