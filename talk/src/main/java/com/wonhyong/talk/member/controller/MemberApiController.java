@@ -1,6 +1,5 @@
 package com.wonhyong.talk.member.controller;
 
-import com.wonhyong.talk.board.model.Board;
 import com.wonhyong.talk.member.service.MemberService;
 import com.wonhyong.talk.member.domain.Member;
 import lombok.AllArgsConstructor;

@@ -1,5 +1,6 @@
 package com.wonhyong.talk.board.entity;
 
+import com.wonhyong.talk.member.domain.Member;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -24,6 +25,11 @@ public class Post extends BaseTimeEntity {
 
     @Column(columnDefinition = "TEXT", nullable = false)
     private String content;
+
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id")
+    private Member member;
 
     @Column(columnDefinition = "integer default 0", nullable = false)
     private int view;
