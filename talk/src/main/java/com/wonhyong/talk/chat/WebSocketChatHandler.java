@@ -20,7 +20,7 @@ public class WebSocketChatHandler extends TextWebSocketHandler {
     private final ChatService chatService;
 
     @Override
-    protected void handleTextMessage(@NonNull WebSocketSession session, @NonNull TextMessage message) throws Exception {
+    protected void handleTextMessage(@NonNull WebSocketSession session, @NonNull TextMessage message) {
         String payload = message.getPayload();
         log.info("payload {}", payload);
         try {
@@ -28,6 +28,7 @@ public class WebSocketChatHandler extends TextWebSocketHandler {
             chatService.handleMessageActions(session, chatMessage);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
+            chatService.sendErrorMessage(session, e.getMessage());
         }
     }
 }

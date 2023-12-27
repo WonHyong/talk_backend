@@ -3,6 +3,10 @@ package com.wonhyong.talk.chat.service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wonhyong.talk.chat.dto.ChatMessage;
 import com.wonhyong.talk.chat.dto.ChatRoom;
+import com.wonhyong.talk.chat.entity.ChatMessageEntity;
+import com.wonhyong.talk.chat.entity.ChatRoomEntity;
+import com.wonhyong.talk.chat.repository.ChatMessageRepository;
+import com.wonhyong.talk.chat.repository.ChatRoomRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -12,6 +16,7 @@ import org.springframework.web.socket.WebSocketSession;
 import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -21,9 +26,18 @@ public class ChatService {
     private final ObjectMapper objectMapper;
     private Map<String, ChatRoom> chatRooms;
 
+    private final ChatRoomRepository chatRoomRepository;
+    private final ChatMessageRepository chatMessageRepository;
+
     @PostConstruct
     private void init() {
-        chatRooms = new LinkedHashMap<>();
+        chatRooms = chatRoomRepository.findAll().stream()
+                .map(ChatRoomEntity::toModel)
+                .collect(Collectors.toMap(
+                        ChatRoom::getRoomId,
+                        room -> room,
+                        (existing, replacement) -> existing,
+                        LinkedHashMap::new));
     }
 
     public List<ChatRoom> findAllRooms() {
@@ -41,6 +55,7 @@ public class ChatService {
                 .name(name)
                 .build();
         chatRooms.put(randomId, chatRoom);
+        chatRoomRepository.save(ChatRoomEntity.from(chatRoom));
         return chatRoom;
     }
 
@@ -54,6 +69,7 @@ public class ChatService {
         }
 
         sendMessageToRoom(room, chatMessage);
+        chatMessageRepository.save(ChatMessageEntity.from(chatMessage));
     }
 
     private void enterRoom(WebSocketSession session, ChatRoom chatRoom, ChatMessage chatMessage) {
@@ -65,6 +81,10 @@ public class ChatService {
         room.getSessions().parallelStream().forEach(session -> sendMessage(session, msg));
     }
 
+    public void sendErrorMessage(WebSocketSession session, String message) {
+        sendMessage(session, message);
+    }
+
     private <T> void sendMessage(WebSocketSession session, T message) {
         try {
             session.sendMessage(new TextMessage(objectMapper.writeValueAsString(message)));
@@ -72,4 +92,6 @@ public class ChatService {
             log.error(e.getMessage(), e);
         }
     }
+
+
 }
