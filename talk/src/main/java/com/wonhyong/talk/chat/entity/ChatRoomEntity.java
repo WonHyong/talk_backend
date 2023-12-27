@@ -2,7 +2,6 @@ package com.wonhyong.talk.chat.entity;
 
 import com.wonhyong.talk.chat.dto.ChatRoom;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.Column;
@@ -23,14 +22,14 @@ public class ChatRoomEntity {
     @Column(length = 50, nullable = false)
     private String name;
 
+    public static ChatRoomEntity from(ChatRoom chatRoom) {
+        return new ChatRoomEntity(chatRoom.getRoomId(), chatRoom.getName());
+    }
+
     public ChatRoom toModel() {
         return ChatRoom.builder()
                 .roomId(roomId)
                 .name(name)
                 .build();
-    }
-
-    public static ChatRoomEntity from(ChatRoom chatRoom) {
-        return new ChatRoomEntity(chatRoom.getRoomId(), chatRoom.getName());
     }
 }

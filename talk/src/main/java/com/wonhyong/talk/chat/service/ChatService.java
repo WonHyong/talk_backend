@@ -24,10 +24,9 @@ import java.util.stream.Collectors;
 public class ChatService {
 
     private final ObjectMapper objectMapper;
-    private Map<String, ChatRoom> chatRooms;
-
     private final ChatRoomRepository chatRoomRepository;
     private final ChatMessageRepository chatMessageRepository;
+    private Map<String, ChatRoom> chatRooms;
 
     @PostConstruct
     private void init() {

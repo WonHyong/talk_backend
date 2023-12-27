@@ -1,6 +1,5 @@
 package com.wonhyong.talk.chat;
 
-import com.wonhyong.talk.board.entity.Post;
 import com.wonhyong.talk.chat.dto.ChatRoom;
 import com.wonhyong.talk.chat.entity.ChatRoomEntity;
 import com.wonhyong.talk.chat.repository.ChatRoomRepository;
