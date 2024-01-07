@@ -1,8 +1,13 @@
 package com.wonhyong.talk.member.service;
 
 import com.wonhyong.talk.member.domain.Member;
+import com.wonhyong.talk.member.dto.MemberRequestDto;
+import com.wonhyong.talk.member.dto.MemberResponseDto;
+import com.wonhyong.talk.member.jwt.JwtProvider;
 import com.wonhyong.talk.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,13 +21,14 @@ public class MemberService{
 
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
+    private final JwtProvider jwtProvider;
 
     public void saveMember(Member member) {
         member.setPassword(passwordEncoder.encode(member.getPassword()));
         memberRepository.save(member);
     }
 
-    public Member findByName(String name) {
+    public Optional<Member> findByName(String name) {
         return memberRepository.findByName(name);
     }
     public Iterable<Member> getAllMembers() {
@@ -37,17 +43,18 @@ public class MemberService{
         memberRepository.deleteById(userId);
     }
 
-//    @Override
-//    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-//        Member member = memberRepository.findByName(username);
-//        if (member == null) {
-//            throw new UsernameNotFoundException("User not found with username: " + username);
-//        }
-//
-//        return User.withUsername(username)
-//                .password(member.getPassword())
-//                .roles("USER")
-//                .build();
-//    }
+    public MemberResponseDto login(MemberRequestDto request) throws Exception {
+        Member member = memberRepository.findByName(request.getName()).orElseThrow(() ->
+                new BadCredentialsException("잘못된 계정정보입니다."));
 
+        if (!passwordEncoder.matches(request.getPassword(), member.getPassword())) {
+            throw new BadCredentialsException("잘못된 계정정보입니다.");
+        }
+
+        return MemberResponseDto.builder()
+                .name(member.getName())
+                .token(jwtProvider.createToken(member.getName()))
+                .build();
+
+    }
 }
