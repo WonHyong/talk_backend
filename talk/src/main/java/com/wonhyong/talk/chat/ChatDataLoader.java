@@ -1,12 +1,13 @@
 package com.wonhyong.talk.chat;
 
+
 import com.wonhyong.talk.chat.dto.ChatRoom;
 import com.wonhyong.talk.chat.entity.ChatRoomEntity;
 import com.wonhyong.talk.chat.repository.ChatRoomRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
+import javax.annotation.Construct;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
