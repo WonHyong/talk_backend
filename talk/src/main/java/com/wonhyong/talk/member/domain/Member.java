@@ -1,6 +1,6 @@
 package com.wonhyong.talk.member.domain;
 
-import com.wonhyong.talk.board.model.Board;
+import com.wonhyong.talk.board.entity.Post;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.tomcat.jni.Address;
@@ -22,5 +22,5 @@ public class Member {
     private String password;
 
     @OneToMany(mappedBy = "member")
-    private List<Board> boards = new ArrayList<>();
+    private List<Post> boards = new ArrayList<>();
 }

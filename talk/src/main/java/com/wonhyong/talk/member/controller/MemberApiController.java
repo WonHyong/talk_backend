@@ -11,10 +11,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 
 @CrossOrigin
@@ -27,7 +23,7 @@ public class MemberApiController {
 
     @PostMapping(value = "/new")
     public String create(@RequestBody Member member) {
-        if (memberService.findByName(member.getName()) != null) {
+        if (memberService.findByName(member.getName()).isPresent()) {
             return "failed";
         }
         // 저장
