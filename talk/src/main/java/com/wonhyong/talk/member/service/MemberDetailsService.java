@@ -17,11 +17,10 @@ public class MemberDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Member member = memberRepository.findByName(username);
-        if (member != null){
-            return new MemberDetails(member);
-        }
+        Member member = memberRepository.findByName(username).orElseThrow(
+                () -> new UsernameNotFoundException("Invalid authentication!")
+        );
 
-        return null;
+        return new MemberDetails(member);
     }
 }

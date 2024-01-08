@@ -33,3 +33,7 @@ spring:
 logging:
   level:
     org.hibernate.SQL: debug
+
+jwt:
+  secret:
+    key: wonhyongbabywonhyongbabywonhyongbabywonhyongbabywonhyongbabywonhyongbaby

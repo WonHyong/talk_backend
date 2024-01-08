@@ -1,16 +1,16 @@
 package com.wonhyong.talk.member.controller;
 
+import com.wonhyong.talk.member.dto.MemberRequestDto;
+import com.wonhyong.talk.member.dto.MemberResponseDto;
 import com.wonhyong.talk.member.service.MemberService;
 import com.wonhyong.talk.member.domain.Member;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 
 @CrossOrigin
@@ -23,7 +23,7 @@ public class MemberApiController {
 
     @PostMapping(value = "/new")
     public String create(@RequestBody Member member) {
-        if (memberService.findByName(member.getName()) != null) {
+        if (memberService.findByName(member.getName()).isPresent()) {
             return "failed";
         }
         // 저장
@@ -37,10 +37,9 @@ public class MemberApiController {
         return memberService.getAllMembers();
     }
 
-    @PostMapping("/login")
-    public String login(@RequestParam String username, @RequestParam String password) {
-
-        return "Login successful for user: " + username;
+    @PostMapping(value = "/login")
+    public ResponseEntity<MemberResponseDto> signin(@RequestBody MemberRequestDto request) throws Exception {
+        return new ResponseEntity<>(memberService.login(request), HttpStatus.OK);
     }
 
     @Data
