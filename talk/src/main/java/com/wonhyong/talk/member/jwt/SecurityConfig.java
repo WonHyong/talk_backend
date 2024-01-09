@@ -59,7 +59,7 @@ public class SecurityConfig{
                 .authorizeRequests()
                 // 회원가입과 로그인은 모두 승인
                 .antMatchers("/api/members/new", "/api/members/login", "/api/members", "/chat").permitAll()
-                .anyRequest().denyAll()
+                .anyRequest().authenticated()
                 .and()
                 // JWT 인증 필터 적용
                 .addFilterBefore(new JwtAuthenticationFilter(jwtProvider), UsernamePasswordAuthenticationFilter.class)
