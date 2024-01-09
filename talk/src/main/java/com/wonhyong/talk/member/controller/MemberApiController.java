@@ -67,6 +67,6 @@ public class MemberApiController {
     @AllArgsConstructor
     static class MemberDto {
         private String name;
-        private String passsword;
+        private String password;
     }
 }

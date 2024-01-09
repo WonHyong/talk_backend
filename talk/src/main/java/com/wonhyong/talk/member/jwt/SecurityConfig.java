@@ -4,7 +4,6 @@ package com.wonhyong.talk.member.jwt;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -13,7 +12,6 @@ import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
@@ -60,7 +58,7 @@ public class SecurityConfig{
                 // 조건별로 요청 허용/제한 설정
                 .authorizeRequests()
                 // 회원가입과 로그인은 모두 승인
-                .antMatchers("/api/members/new", "/api/members/login", "/api/members").permitAll()
+                .antMatchers("/api/members/new", "/api/members/login", "/api/members", "chat").permitAll()
                 .anyRequest().denyAll()
                 .and()
                 // JWT 인증 필터 적용
