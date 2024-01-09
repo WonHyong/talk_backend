@@ -38,35 +38,7 @@ public class MemberApiController {
     }
 
     @PostMapping(value = "/login")
-    public ResponseEntity<MemberResponseDto> signin(@RequestBody MemberRequestDto request) throws Exception {
+    public ResponseEntity<MemberResponseDto> signIn(@RequestBody MemberRequestDto request) throws Exception {
         return new ResponseEntity<>(memberService.login(request), HttpStatus.OK);
-    }
-
-    @Data
-    static class CreateMemberRequest {
-        private String name;
-        private String password;
-    }
-
-
-    @Data
-    static class CreateMemberResponse {
-        private Long id;
-
-        public CreateMemberResponse(Long id) {
-            this.id = id;
-        }
-    }
-
-    @Data
-    @AllArgsConstructor
-    static class Result<T> {
-        private T data;
-    }
-    @Data
-    @AllArgsConstructor
-    static class MemberDto {
-        private String name;
-        private String passsword;
     }
 }

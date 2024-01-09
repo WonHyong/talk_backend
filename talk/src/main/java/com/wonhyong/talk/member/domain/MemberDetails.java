@@ -4,6 +4,7 @@ import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 @Data
@@ -15,7 +16,10 @@ public class MemberDetails implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return null;
+        Collection<GrantedAuthority> collectors = new ArrayList<>();
+        collectors.add(()->{return "ROLE_"+ member.getRole().toString();}); //add에 들어올 파라미터는 GrantedAuthority밖에 없으니
+
+        return collectors;
     }
 
     @Override

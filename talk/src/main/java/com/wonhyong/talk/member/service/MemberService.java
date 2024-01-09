@@ -53,7 +53,7 @@ public class MemberService{
 
         return MemberResponseDto.builder()
                 .name(member.getName())
-                .token(jwtProvider.createToken(member.getName()))
+                .token(jwtProvider.createToken(member.getId()))
                 .build();
 
     }
