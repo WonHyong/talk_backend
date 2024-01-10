@@ -1,16 +1,14 @@
 package com.wonhyong.talk.board.entity;
 
 import com.wonhyong.talk.member.domain.Member;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 
 @Table(name = "posts")
 @Entity
 @Getter
+@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -37,5 +35,10 @@ public class Post extends BaseTimeEntity {
     public void update(String title, String content) {
         this.title = title;
         this.content = content;
+    }
+
+    public void setMappingMember(Member member) {
+        this.member = member;
+        member.getBoards().add(this);
     }
 }

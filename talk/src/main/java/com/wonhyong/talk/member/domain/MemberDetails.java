@@ -17,6 +17,7 @@ public class MemberDetails implements UserDetails {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         Collection<GrantedAuthority> collectors = new ArrayList<>();
+        System.out.println("ROLE_"+ member.getRole().toString());
         collectors.add(()->{return "ROLE_"+ member.getRole().toString();}); //add에 들어올 파라미터는 GrantedAuthority밖에 없으니
 
         return collectors;

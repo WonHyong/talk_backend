@@ -1,9 +1,7 @@
 package com.wonhyong.talk.member.domain;
 
 import com.wonhyong.talk.board.entity.Post;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import org.apache.tomcat.jni.Address;
 
 import javax.persistence.*;
@@ -11,6 +9,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Getter @Setter
 public class Member {
     @Id
@@ -23,10 +24,11 @@ public class Member {
 
     private String password;
 
+    @Column(name = "authority")
+    @Builder.Default
     @Enumerated(EnumType.STRING)
-    private Role role;
+    private Role role = Role.USER;
 
-
-    @OneToMany(mappedBy = "member")
+    @OneToMany(mappedBy = "member", cascade = CascadeType.REMOVE)
     private List<Post> boards = new ArrayList<>();
 }

@@ -1,5 +1,6 @@
 package com.wonhyong.talk.member.jwt;
 
+import com.wonhyong.talk.member.domain.Role;
 import com.wonhyong.talk.member.service.MemberDetailsService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
@@ -39,8 +40,10 @@ public class JwtProvider {
         secretKey = Keys.hmacShaKeyFor(salt.getBytes(StandardCharsets.UTF_8));
     }
 
-    public String createToken(Long userPK) {
-        Claims claims = Jwts.claims().setSubject(String.valueOf(userPK)); // JWT payload 에 저장되는 정보단위
+    public String createToken(Long id, String userPK, Role role) {
+        Claims claims = Jwts.claims().setSubject(userPK); // JWT payload 에 저장되는 정보단위
+        claims.put("role", role.toString());
+        claims.put("id", String.valueOf(id));
         Date now = new Date();
         return Jwts.builder()
                 .setClaims(claims) // 정보 저장
@@ -53,7 +56,7 @@ public class JwtProvider {
 
     public Authentication getAuthentication(String token) {
         UserDetails userDetails = memberDetailsService.loadUserByUsername(this.getUserPk(token));
-        return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
+        return new UsernamePasswordAuthenticationToken(userDetails, token, userDetails.getAuthorities());
     }
 
     public String getUserPk(String token) {

@@ -22,14 +22,14 @@ public class MemberApiController {
     private final MemberService memberService;
 
     @PostMapping(value = "/new")
-    public String create(@RequestBody Member member) {
-        if (memberService.findByName(member.getName()).isPresent()) {
+    public String create(@RequestBody MemberRequestDto memberRequestDto) {
+        if (memberService.findByName(memberRequestDto.getName()).isPresent()) {
             return "failed";
         }
         // 저장
-        memberService.saveMember(member);
+        memberService.saveMember(memberRequestDto);
 
-        return "Registration successful for user: " + member.getName();
+        return "Registration successful for user: " + memberRequestDto.getName();
     }
 
     @GetMapping
