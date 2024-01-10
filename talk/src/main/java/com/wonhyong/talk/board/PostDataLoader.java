@@ -2,6 +2,7 @@ package com.wonhyong.talk.board;
 
 import com.wonhyong.talk.board.entity.Post;
 import com.wonhyong.talk.board.repository.PostRepository;
+import com.wonhyong.talk.member.domain.Member;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;

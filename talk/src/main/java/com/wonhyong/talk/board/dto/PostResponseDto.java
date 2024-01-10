@@ -25,11 +25,13 @@ public class PostResponseDto {
     private final int view;
 
     public static PostResponseDto from(Post post) {
+        Member member = post.getMember();
+        String mName = (member == null)? "EMPTY" : member.getName();
         return new PostResponseDto(
                 post.getId(),
                 post.getTitle(),
                 post.getContent(),
-                post.getMember().getName(),
+                mName,
                 post.getComments().stream().map(CommentResponseDto::from).collect(Collectors.toList()),
                 post.getCreatedDate().format(DateTimeFormatter.ofPattern(BaseTimeEntity.DATE_FORMAT)),
                 post.getModifiedDate().format(DateTimeFormatter.ofPattern(BaseTimeEntity.DATE_FORMAT)),

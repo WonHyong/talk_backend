@@ -42,7 +42,7 @@ server:
 
 logging:
   level:
-    org.hibernate.SQL: off
+    org.hibernate.SQL: debug
   config: classpath:logback-dev.xml
 
 jwt:
