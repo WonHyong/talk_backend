@@ -1,14 +1,17 @@
 package com.wonhyong.talk.board.entity;
 
 import com.wonhyong.talk.member.domain.Member;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Table(name = "posts")
 @Entity
 @Getter
-@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -16,6 +19,7 @@ public class Post extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "post_id")
     private Long id;
 
     @Column(length = 50, nullable = false)
@@ -24,10 +28,12 @@ public class Post extends BaseTimeEntity {
     @Column(columnDefinition = "TEXT", nullable = false)
     private String content;
 
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
+
+    @OneToMany(mappedBy = "post", fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
+    private List<Comment> comments;
 
     @Column(columnDefinition = "integer default 0", nullable = false)
     private int view;
@@ -37,8 +43,7 @@ public class Post extends BaseTimeEntity {
         this.content = content;
     }
 
-    public void setMappingMember(Member member) {
-        this.member = member;
-        member.getBoards().add(this);
+    public void increaseView() {
+        this.view += 1;
     }
 }
