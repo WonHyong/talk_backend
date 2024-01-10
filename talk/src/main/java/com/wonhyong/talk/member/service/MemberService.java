@@ -1,5 +1,6 @@
 package com.wonhyong.talk.member.service;
 
+import com.wonhyong.talk.board.entity.Post;
 import com.wonhyong.talk.member.domain.Member;
 import com.wonhyong.talk.member.dto.MemberRequestDto;
 import com.wonhyong.talk.member.dto.MemberResponseDto;
@@ -23,7 +24,8 @@ public class MemberService{
     private final PasswordEncoder passwordEncoder;
     private final JwtProvider jwtProvider;
 
-    public void saveMember(Member member) {
+    public void saveMember(MemberRequestDto memberRequestDto) {
+        Member member = memberRequestDto.toEntity();
         member.setPassword(passwordEncoder.encode(member.getPassword()));
         memberRepository.save(member);
     }
@@ -53,7 +55,7 @@ public class MemberService{
 
         return MemberResponseDto.builder()
                 .name(member.getName())
-                .token(jwtProvider.createToken(member.getName()))
+                .token(jwtProvider.createToken(member.getId(), member.getName(), member.getRole()))
                 .build();
 
     }
