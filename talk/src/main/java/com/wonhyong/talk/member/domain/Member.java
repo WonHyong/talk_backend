@@ -23,4 +23,12 @@ public class Member {
 
     @OneToMany(mappedBy = "member")
     private List<Post> boards = new ArrayList<>();
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof Member) {
+            return ((Member) obj).id.equals(id);
+        }
+        return false;
+    }
 }

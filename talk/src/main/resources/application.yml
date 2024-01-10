@@ -29,10 +29,21 @@ spring:
       hibernate.format_sql: true
       dialect: org.hibernate.dialect.MySQL8InnoDBDialect
 
+server:
+  tomcat:
+    accesslog:
+      enabled: true
+      file-date-format: yy-MM-dd
+      pattern: '%{yyyy-MM-dd HH:mm:ss}t %s %r %{User-Agent}i %{Referer}i %a %b %D'
+      directory: logs/access_log
+      suffix: .log
+      prefix: access_log_
+    basedir: .
 
 logging:
   level:
-    org.hibernate.SQL: debug
+    org.hibernate.SQL: off
+  config: classpath:logback-dev.xml
 
 jwt:
   secret:
