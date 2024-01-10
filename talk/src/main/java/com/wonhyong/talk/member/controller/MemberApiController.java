@@ -22,14 +22,14 @@ public class MemberApiController {
     private final MemberService memberService;
 
     @PostMapping(value = "/new")
-    public String create(@RequestBody Member member) {
-        if (memberService.findByName(member.getName()).isPresent()) {
+    public String create(@RequestBody MemberRequestDto memberRequestDto) {
+        if (memberService.findByName(memberRequestDto.getName()).isPresent()) {
             return "failed";
         }
         // 저장
-        memberService.saveMember(member);
+        memberService.saveMember(memberRequestDto);
 
-        return "Registration successful for user: " + member.getName();
+        return "Registration successful for user: " + memberRequestDto.getName();
     }
 
     @GetMapping
@@ -38,35 +38,7 @@ public class MemberApiController {
     }
 
     @PostMapping(value = "/login")
-    public ResponseEntity<MemberResponseDto> signin(@RequestBody MemberRequestDto request) throws Exception {
+    public ResponseEntity<MemberResponseDto> signIn(@RequestBody MemberRequestDto request) throws Exception {
         return new ResponseEntity<>(memberService.login(request), HttpStatus.OK);
-    }
-
-    @Data
-    static class CreateMemberRequest {
-        private String name;
-        private String password;
-    }
-
-
-    @Data
-    static class CreateMemberResponse {
-        private Long id;
-
-        public CreateMemberResponse(Long id) {
-            this.id = id;
-        }
-    }
-
-    @Data
-    @AllArgsConstructor
-    static class Result<T> {
-        private T data;
-    }
-    @Data
-    @AllArgsConstructor
-    static class MemberDto {
-        private String name;
-        private String password;
     }
 }
