@@ -3,11 +3,13 @@ package com.wonhyong.talk.board.controller;
 import com.wonhyong.talk.board.dto.PostRequestDto;
 import com.wonhyong.talk.board.dto.PostResponseDto;
 import com.wonhyong.talk.board.service.PostService;
+import com.wonhyong.talk.member.domain.MemberDetails;
 import com.wonhyong.talk.member.service.MemberService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
@@ -32,9 +34,10 @@ public class PostController {
     }
 
     @PostMapping
-    public PostResponseDto createPost(@RequestBody PostRequestDto postRequestDto) {
+    public PostResponseDto createPost(@RequestBody PostRequestDto postRequestDto,
+                                      @AuthenticationPrincipal MemberDetails member) {
         log.info("board: Post created: " + postRequestDto);
-        return postService.create(postRequestDto);
+        return postService.create(postRequestDto, member);
     }
 
     @PutMapping("/{id}")

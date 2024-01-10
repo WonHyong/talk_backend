@@ -44,4 +44,9 @@ public class Post extends BaseTimeEntity {
     public void increaseView() {
         this.view += 1;
     }
+
+    public void setMappingMember(Member member) {
+        this.member = member;
+        member.getBoards().add(this);
+    }
 }
