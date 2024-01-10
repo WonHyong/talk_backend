@@ -3,6 +3,7 @@ package com.wonhyong.talk.board.controller;
 import com.wonhyong.talk.board.dto.PostRequestDto;
 import com.wonhyong.talk.board.dto.PostResponseDto;
 import com.wonhyong.talk.board.service.PostService;
+import com.wonhyong.talk.member.service.MemberService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;

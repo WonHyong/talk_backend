@@ -4,6 +4,7 @@ import com.wonhyong.talk.board.dto.PostRequestDto;
 import com.wonhyong.talk.board.dto.PostResponseDto;
 import com.wonhyong.talk.board.entity.Post;
 import com.wonhyong.talk.board.repository.PostRepository;
+import com.wonhyong.talk.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -26,8 +27,9 @@ public class PostService {
 
     @Transactional(readOnly = true)
     public Optional<PostResponseDto> findById(Long id) {
-        return postRepository.findById(id)
-                .map(PostResponseDto::from);
+        Post post = postRepository.findById(id).orElseThrow(IllegalArgumentException::new);
+        post.increaseView();
+        return Optional.of(PostResponseDto.from(post));
     }
 
     @Transactional

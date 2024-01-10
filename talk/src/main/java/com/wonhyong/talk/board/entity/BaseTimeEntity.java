@@ -13,7 +13,9 @@ import java.time.LocalDateTime;
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
 @Getter
-abstract class BaseTimeEntity {
+public abstract class BaseTimeEntity {
+
+    public static final String DATE_FORMAT = "yyyy.mm.dd HH:mm";
 
     @CreatedDate
     @Column(name = "created_date", nullable = false)
