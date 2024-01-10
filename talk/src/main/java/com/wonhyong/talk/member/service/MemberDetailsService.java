@@ -18,7 +18,7 @@ public class MemberDetailsService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         Member member = memberRepository.findByName(username).orElseThrow(
-                () -> new UsernameNotFoundException("Invalid authentication!")
+                () -> new UsernameNotFoundException("Invalid authentication!!")
         );
 
         return new MemberDetails(member);
