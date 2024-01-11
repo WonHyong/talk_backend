@@ -32,6 +32,7 @@ public class ChatRoom {
     }
 
     @RequiredArgsConstructor
+    @Getter
     public static class Response {
         private final String roomId;
         private final String name;
