@@ -28,7 +28,6 @@ public class WebSocketChatHandler extends TextWebSocketHandler {
             chatService.handleMessageActions(session, chatMessage);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
-            chatService.sendErrorMessage(session, e.getMessage());
         }
     }
 }
