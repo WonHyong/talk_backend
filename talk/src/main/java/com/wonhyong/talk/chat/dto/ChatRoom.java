@@ -25,4 +25,8 @@ public class ChatRoom {
     public void addSession(WebSocketSession session) {
         sessions.add(session);
     }
+
+    public void removeSession(WebSocketSession session) {
+        sessions.remove(session);
+    }
 }
