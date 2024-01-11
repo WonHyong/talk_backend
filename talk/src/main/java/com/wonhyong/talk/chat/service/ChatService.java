@@ -78,14 +78,16 @@ public class ChatService {
     }
 
     private void sendMessageToRoom(ChatRoom room, ChatMessage msg) {
+        List<WebSocketSession> toRemoveSessions = new ArrayList<>();
         room.getSessions().parallelStream().forEach(session -> {
             try {
                 sendMessage(session, msg);
             } catch (Exception e) {
                 log.error(e.getMessage());
-                room.removeSession(session);
+                toRemoveSessions.add(session);
             }
         });
+        toRemoveSessions.forEach(room::removeSession);
     }
 
     public void sendErrorMessage(WebSocketSession session, String message) {
