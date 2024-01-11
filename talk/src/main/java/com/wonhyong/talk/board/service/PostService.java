@@ -50,16 +50,26 @@ public class PostService {
     }
 
     @Transactional
-    public PostResponseDto update(Long id, PostRequestDto postRequestDto) {
+    public PostResponseDto update(Long id, PostRequestDto postRequestDto, String userName) {
         Post post = postRepository.findById(id).orElseThrow(IllegalArgumentException::new);
-        post.update(postRequestDto.getTitle(), postRequestDto.getContent());
-        postRepository.save(post);
-        return PostResponseDto.from(post);
+        System.out.println(post.getMember().getName());
+        if (!post.getMember().getName().equals(userName)) {
+            return null;
+        }else {
+            post.update(postRequestDto.getTitle(), postRequestDto.getContent());
+            postRepository.save(post);
+            return PostResponseDto.from(post);
+        }
     }
 
     @Transactional
-    public void delete(Long id) {
-        postRepository.findById(id).orElseThrow(IllegalArgumentException::new);
+    public boolean delete(Long id, String userName) {
+
+        Post post = postRepository.findById(id).orElseThrow(IllegalArgumentException::new);
+        if (!post.getMember().getName().equals(userName)) {
+            return false;
+        }
         postRepository.deleteById(id);
+        return true;
     }
 }
