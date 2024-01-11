@@ -2,6 +2,7 @@ package com.wonhyong.talk.chat.dto;
 
 import lombok.Builder;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import org.springframework.web.socket.WebSocketSession;
 
@@ -28,5 +29,15 @@ public class ChatRoom {
 
     public void removeSession(WebSocketSession session) {
         sessions.remove(session);
+    }
+
+    @RequiredArgsConstructor
+    public static class Response {
+        private final String roomId;
+        private final String name;
+
+        public static Response from(ChatRoom chatRoom) {
+            return new Response(chatRoom.getRoomId(), chatRoom.getName());
+        }
     }
 }

@@ -19,7 +19,7 @@ public class ChatController {
     }
 
     @GetMapping
-    public Iterable<ChatRoom> findAllRoom() {
+    public Iterable<ChatRoom.Response> findAllRoom() {
         return chatService.findAllRooms();
     }
 }

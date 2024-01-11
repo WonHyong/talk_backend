@@ -40,8 +40,10 @@ public class ChatService {
                         LinkedHashMap::new));
     }
 
-    public List<ChatRoom> findAllRooms() {
-        return new ArrayList<>(chatRooms.values());
+    public List<ChatRoom.Response> findAllRooms() {
+        return chatRooms.values().stream()
+                .map(ChatRoom.Response::from)
+                .collect(Collectors.toList());
     }
 
     public Optional<ChatRoom> findRoomById(String roomId) {
