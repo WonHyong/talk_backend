@@ -21,6 +21,8 @@ public class ChatDataLoader {
 
     @PostConstruct
     private void loadChatRoomData() {
+        chatRoomRepository.deleteAll();
+
         List<ChatRoom> sampleRooms = new ArrayList<>(100);
 
         for (int i = 0; i < 10; i++) {
