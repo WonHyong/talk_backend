@@ -1,67 +1,65 @@
 package com.wonhyong.talk.board.controller;
 
-import com.wonhyong.talk.board.dto.PostRequestDto;
-import com.wonhyong.talk.board.dto.PostResponseDto;
+import com.wonhyong.talk.board.dto.PostDto;
 import com.wonhyong.talk.board.service.PostService;
 import com.wonhyong.talk.member.domain.MemberDetails;
-import com.wonhyong.talk.member.service.MemberService;
-import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
-import java.util.Optional;
+import java.util.NoSuchElementException;
 
-@Slf4j
+
 @CrossOrigin
 @RestController
 @RequestMapping("/api/boards")
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class PostController {
 
     private final PostService postService;
 
     @GetMapping
-    public Iterable<PostResponseDto> getPosts(Pageable pageable) {
-        return postService.pages(pageable);
+    public Iterable<PostDto> getPosts(Pageable pageable) throws Exception {
+        return postService.getPage(pageable);
     }
 
     @GetMapping("/{id}")
-    public Optional<PostResponseDto> getPostById(@PathVariable("id") Long id) {
-
+    public PostDto getPostById(@PathVariable("id") Long id) throws Exception {
         return postService.findById(id);
     }
 
     @PostMapping
-    public PostResponseDto createPost(@RequestBody PostRequestDto postRequestDto,
-                                      @AuthenticationPrincipal MemberDetails member) {
-        log.info("board: Post created: " + postRequestDto);
-        return postService.create(postRequestDto, member);
+    public PostDto createPost(@RequestBody PostDto postRequestDto,
+                                      @AuthenticationPrincipal MemberDetails member) throws Exception {
+        return postService.create(member, postRequestDto);
     }
 
     @PutMapping("/{id}")
-    public PostResponseDto updatePost(@PathVariable("id") Long id, @RequestBody PostRequestDto postRequestDto, @AuthenticationPrincipal MemberDetails member) {
-        log.info("board: Post updated: " + postRequestDto);
-        PostResponseDto result = postService.update(id, postRequestDto, member.getUsername());
-        if (result == null) {
-            throw new ResponseStatusException(
-                    HttpStatus.NOT_FOUND, "entity not found"
-            );
-        }
-        return result;
+    public PostDto updatePost(@PathVariable("id") Long id,
+                              @RequestBody PostDto postRequestDto,
+                              @AuthenticationPrincipal MemberDetails member) throws Exception {
+
+        return postService.update(id, member, postRequestDto);
     }
 
     @DeleteMapping("/{id}")
-    public void deletePost(@PathVariable("id") Long id, @AuthenticationPrincipal MemberDetails member) {
-        if (!postService.delete(id, member.getUsername())) {
-            throw new ResponseStatusException(
-                    HttpStatus.NOT_FOUND, "entity not found"
-            );
-        }
-        log.info("board: Post deleted: " + id);
+    public ResponseEntity<String> deletePost(@PathVariable("id") Long id, @AuthenticationPrincipal MemberDetails member) throws Exception {
+        postService.delete(id, member);
+        return ResponseEntity.ok("Post(" + id + ") deleted");
+    }
+
+    //TODO to all controller handler
+    @ExceptionHandler({NoSuchElementException.class, IllegalArgumentException.class})
+    public ResponseEntity<String> handleNoElement(Exception e) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+    }
+
+    @ExceptionHandler({UsernameNotFoundException.class, IllegalAccessException.class})
+    public ResponseEntity<String> handleUserExceptions(Exception e) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
     }
 }

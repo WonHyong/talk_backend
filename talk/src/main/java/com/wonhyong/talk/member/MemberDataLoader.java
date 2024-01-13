@@ -1,10 +1,7 @@
 package com.wonhyong.talk.member;
 
-import com.wonhyong.talk.board.entity.Post;
-import com.wonhyong.talk.board.repository.PostRepository;
 import com.wonhyong.talk.member.domain.Member;
 import com.wonhyong.talk.member.repository.MemberRepository;
-import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import java.util.ArrayList;
@@ -22,7 +19,7 @@ public class MemberDataLoader {
     private void loadBoardData() {
         List<Member> sampleMembers = new ArrayList<>(10);
 
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < 10; i++) {
             Member member = new Member();
             member.setName("test" + i);
             member.setPassword("1234");

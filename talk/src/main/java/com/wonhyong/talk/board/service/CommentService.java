@@ -1,21 +1,17 @@
 package com.wonhyong.talk.board.service;
 
-import com.wonhyong.talk.board.dto.CommentRequestDto;
-import com.wonhyong.talk.board.dto.CommentResponseDto;
-import com.wonhyong.talk.board.dto.PostRequestDto;
-import com.wonhyong.talk.board.dto.PostResponseDto;
-import com.wonhyong.talk.board.entity.Comment;
-import com.wonhyong.talk.board.entity.Post;
+import com.wonhyong.talk.board.dto.CommentDto;
+import com.wonhyong.talk.board.model.Comment;
+import com.wonhyong.talk.board.model.Post;
 import com.wonhyong.talk.board.repository.CommentRepository;
-import com.wonhyong.talk.board.repository.PostRepository;
+import com.wonhyong.talk.member.domain.Member;
+import com.wonhyong.talk.member.domain.MemberDetails;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 @Service
@@ -23,44 +19,46 @@ import java.util.stream.Collectors;
 public class CommentService {
 
     private final CommentRepository commentRepository;
-    private final PostRepository postRepository;
+    private final PostService postService;
 
     @Transactional(readOnly = true)
-    public Iterable<CommentResponseDto> findAllCommentsInPost(Long postId) {
-        Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new IllegalArgumentException("NO POST FOR " + postId));
+    public Iterable<CommentDto> findAllCommentsInPost(@NonNull Long postId) {
+        Post post = postService.findPostById(postId);
 
-        List<Comment> comments = post.getComments();
-
-        return comments.stream()
-                .map(CommentResponseDto::from)
+        return post.getComments().stream()
+                .map(CommentDto::from)
                 .collect(Collectors.toList());
     }
 
     @Transactional
-    public CommentResponseDto create(Long postId, CommentRequestDto commentRequestDto) {
-        Comment comment = commentRequestDto.toEntity();
-        Post post = postRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("NO POST FOR: " + postId));
-        comment.setPost(post);
+    public CommentDto create(Long postId, MemberDetails member, CommentDto commentDto) {
+        Post post = postService.findPostById(postId);
+        Member currentUser = postService.findUser(member);
+
+        Comment comment = commentDto.toModel(currentUser, post);
         commentRepository.save(comment);
-        return CommentResponseDto.from(comment);
+
+        return CommentDto.from(comment);
     }
 
     @Transactional
-    public CommentResponseDto update(Long commentId, CommentRequestDto commentRequestDto) {
+    public CommentDto update(Long commentId, MemberDetails member, CommentDto commentRequestDto) throws IllegalAccessException {
         Comment comment = commentRepository.findById(commentId)
-                .orElseThrow(() -> new IllegalArgumentException("No Comment For: " + commentId));
+                .orElseThrow(() -> new NoSuchElementException("No Comment For: " + commentId));
+
+        Member currentUser = postService.findUser(member);
+        postService.checkIsWriter(currentUser, member.getMember());
 
         comment.update(commentRequestDto.getContent());
         commentRepository.save(comment);
-        return CommentResponseDto.from(comment);
+
+        return CommentDto.from(comment);
     }
 
     @Transactional
     public void delete(Long commentId) {
-        if (!commentRepository.existsById(commentId)) {
-            throw new IllegalArgumentException("No Comment For: " + commentId);
-        }
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(() -> new NoSuchElementException("No Comment For: " + commentId));
         commentRepository.deleteById(commentId);
     }
 }

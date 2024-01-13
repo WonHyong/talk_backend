@@ -1,8 +1,7 @@
 package com.wonhyong.talk.board;
 
-import com.wonhyong.talk.board.entity.Post;
+import com.wonhyong.talk.board.model.Post;
 import com.wonhyong.talk.board.repository.PostRepository;
-import com.wonhyong.talk.member.domain.Member;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -25,6 +24,7 @@ public class PostDataLoader {
             Post post = Post.builder()
                     .title("Title " + i)
                     .content("Content " + i)
+                    .view(0)
                     .build();
             sampleBoards.add(post);
         }

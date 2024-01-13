@@ -1,19 +1,16 @@
 package com.wonhyong.talk.member.service;
 
-import com.wonhyong.talk.board.entity.Post;
 import com.wonhyong.talk.member.domain.Member;
 import com.wonhyong.talk.member.dto.MemberRequestDto;
 import com.wonhyong.talk.member.dto.MemberResponseDto;
 import com.wonhyong.talk.member.jwt.JwtProvider;
 import com.wonhyong.talk.member.repository.MemberRepository;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -43,6 +40,10 @@ public class MemberService{
 
     public void deleteMember(Long userId) {
         memberRepository.deleteById(userId);
+    }
+
+    public boolean isMemberEquals(@NonNull Member a, @NonNull Member b) {
+        return a.getName().equals(b.getName());
     }
 
     public MemberResponseDto login(MemberRequestDto request) throws Exception {

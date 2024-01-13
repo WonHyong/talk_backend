@@ -1,8 +1,7 @@
 package com.wonhyong.talk.member.domain;
 
-import com.wonhyong.talk.board.entity.Post;
+import com.wonhyong.talk.board.model.Post;
 import lombok.*;
-import org.apache.tomcat.jni.Address;
 
 import javax.persistence.*;
 import java.util.ArrayList;

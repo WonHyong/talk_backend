@@ -1,6 +1,5 @@
 package com.wonhyong.talk.member.dto;
 
-import com.wonhyong.talk.board.entity.Post;
 import com.wonhyong.talk.member.domain.Member;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

@@ -1,22 +1,25 @@
-package com.wonhyong.talk.board.entity;
+package com.wonhyong.talk.board.model;
 
+import com.wonhyong.talk.base.model.BaseTimeModel;
 import com.wonhyong.talk.member.domain.Member;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 
 @Table(name = "comments")
 @Entity
 @Getter
-@Setter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class Comment extends BaseTimeEntity {
+public class Comment extends BaseTimeModel {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "comment_id")
+    @Column
     private Long id;
 
     @Column
@@ -32,5 +35,10 @@ public class Comment extends BaseTimeEntity {
 
     public void update(String content) {
         this.content = content;
+    }
+
+    public String getMemberName() {
+        if (this.member == null) return "NONE";
+        return member.getName();
     }
 }

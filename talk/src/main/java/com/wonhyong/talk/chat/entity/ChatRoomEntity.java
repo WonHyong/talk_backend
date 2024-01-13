@@ -2,8 +2,6 @@ package com.wonhyong.talk.chat.entity;
 
 import com.wonhyong.talk.chat.dto.ChatRoom;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
-
 import lombok.NoArgsConstructor;
 
 import javax.persistence.Column;
