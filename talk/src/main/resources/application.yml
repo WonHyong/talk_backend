@@ -48,3 +48,5 @@ logging:
 jwt:
   secret:
     key: wonhyongbabywonhyongbabywonhyongbabywonhyongbabywonhyongbabywonhyongbaby
+    token-expiration: 5L * 60
+    refresh-token-expiration: 12L * 60 * 60

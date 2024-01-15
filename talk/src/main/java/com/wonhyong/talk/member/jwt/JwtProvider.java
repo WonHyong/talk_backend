@@ -1,6 +1,7 @@
 package com.wonhyong.talk.member.jwt;
 
 import com.wonhyong.talk.member.domain.Role;
+import com.wonhyong.talk.member.repository.RefreshTokenRepository;
 import com.wonhyong.talk.member.service.MemberDetailsService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
@@ -28,10 +29,19 @@ public class JwtProvider {
     @Value("${jwt.secret.key}")
     private String salt;
 
+    @Value("${jwt.secret.token-expiration}")
+    private long tokenExpiration;
+
+    @Value("${jwt.secret.refresh-token-expiration}")
+    private long refreshTokenExpiration;
+
+    private final RefreshTokenRepository refreshTokenRepository;
+
+
     private Key secretKey;
 
     // 만료시간 : 1Hour
-    private final long exp = 1000L * 60 * 60;
+//    private final long exp = 1000L * 60 * 60;
 
     private final MemberDetailsService memberDetailsService;
 
@@ -48,9 +58,21 @@ public class JwtProvider {
         return Jwts.builder()
                 .setClaims(claims) // 정보 저장
                 .setIssuedAt(now) // 토큰 발행 시간 정보
-                .setExpiration(new Date(now.getTime() + exp)) // set Expire Time
+                .setExpiration(new Date(now.getTime() + tokenExpiration)) // set Expire Time
                 .signWith(SignatureAlgorithm.HS256, secretKey)  // 사용할 암호화 알고리즘과
                 // signature 에 들어갈 secret값 세팅
+                .compact();
+    }
+
+    public String generateRefreshToken(UserDetails userDetails) {
+
+        Date now = new Date();
+
+        return Jwts.builder()
+                .setSubject(userDetails.getUsername())
+                .setIssuedAt(now)
+                .setExpiration(new Date(now.getTime() + refreshTokenExpiration))
+                .signWith(SignatureAlgorithm.HS512, secretKey)
                 .compact();
     }
 
