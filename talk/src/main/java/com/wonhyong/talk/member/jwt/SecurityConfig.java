@@ -1,7 +1,6 @@
 package com.wonhyong.talk.member.jwt;
 
 
-import com.wonhyong.talk.member.repository.RefreshTokenRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

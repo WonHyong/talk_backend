@@ -1,7 +1,6 @@
 package com.wonhyong.talk.member.jwt;
 
 import com.wonhyong.talk.member.domain.Role;
-import com.wonhyong.talk.member.repository.RefreshTokenRepository;
 import com.wonhyong.talk.member.service.MemberDetailsService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;

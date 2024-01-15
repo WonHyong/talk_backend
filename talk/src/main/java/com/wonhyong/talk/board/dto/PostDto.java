@@ -2,7 +2,6 @@ package com.wonhyong.talk.board.dto;
 
 import com.wonhyong.talk.base.dto.BaseTimeDto;
 import com.wonhyong.talk.board.model.Post;
-import com.wonhyong.talk.member.domain.Member;
 import lombok.Getter;
 
 @Getter

@@ -1,6 +1,5 @@
 package com.wonhyong.talk.base.exception;
 
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -24,6 +23,6 @@ public class ExceptionController {
 
     @ExceptionHandler({Exception.class})
     public ResponseEntity<String> handleUnknownExceptions(Exception e) {
-        return ResponseEntity.status(500).body(e.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
     }
 }

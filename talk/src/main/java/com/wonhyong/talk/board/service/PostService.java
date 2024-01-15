@@ -9,7 +9,6 @@ import com.wonhyong.talk.member.domain.Role;
 import com.wonhyong.talk.member.service.MemberService;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
