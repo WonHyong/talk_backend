@@ -52,4 +52,13 @@ public class MemberDetails implements UserDetails {
     public boolean isEnabled() {
         return true;
     }
+
+
+    public Long getId() {
+        return member.getId();
+    }
+
+    public Role getRole() {
+        return member.getRole();
+    }
 }
