@@ -20,7 +20,6 @@ import javax.servlet.http.HttpServletRequest;
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Date;
-import java.util.List;
 
 @RequiredArgsConstructor
 @Component
@@ -40,8 +39,7 @@ public class JwtProvider {
 
     private Key secretKey;
 
-    // 만료시간 : 1Hour
-//    private final long exp = 1000L * 60 * 60;
+    private final long exp = 1000L * 60 * 60;
 
     private final MemberDetailsService memberDetailsService;
 

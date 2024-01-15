@@ -1,4 +1,4 @@
-package com.wonhyong.talk.board.entity;
+package com.wonhyong.talk.base.model;
 
 import lombok.Getter;
 import org.springframework.data.annotation.CreatedDate;
@@ -13,9 +13,7 @@ import java.time.LocalDateTime;
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
 @Getter
-public abstract class BaseTimeEntity {
-
-    public static final String DATE_FORMAT = "yyyy.mm.dd HH:mm";
+public abstract class BaseTimeModel {
 
     @CreatedDate
     @Column(name = "created_date", nullable = false)
