@@ -18,14 +18,18 @@ public class PostDataLoader {
 
     @PostConstruct
     private void loadBoardData() {
-        List<Post> sampleBoards = new ArrayList<>(100);
+        postRepository.deleteAll();
 
-        for (int i = 0; i < 100; i++) {
+        List<Post> sampleBoards = new ArrayList<>(30);
+
+        for (int i = 0; i < 30; i++) {
             Post post = Post.builder()
                     .title("Title " + i)
                     .content("Content " + i)
+                    .member(null)
                     .view(0)
                     .build();
+
             sampleBoards.add(post);
         }
 

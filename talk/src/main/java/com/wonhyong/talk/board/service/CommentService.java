@@ -47,7 +47,7 @@ public class CommentService {
                 .orElseThrow(() -> new NoSuchElementException("No Comment For: " + commentId));
 
         Member currentUser = postService.findUser(member);
-        postService.checkIsWriter(currentUser, member.getMember());
+        postService.isWriter(currentUser, member.getMember());
 
         comment.update(commentRequestDto.getContent());
         commentRepository.save(comment);

@@ -5,6 +5,7 @@ import com.wonhyong.talk.member.domain.Member;
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @Table(name = "posts")
@@ -33,8 +34,9 @@ public class Post extends BaseTimeModel {
     private Member member;
 
     @OneToMany(mappedBy = "post", fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
-    private List<Comment> comments;
+    private List<Comment> comments = new ArrayList<>();
 
+    //TODO LIKE VIEW class 분리
     @Column(columnDefinition = "integer default 0", nullable = false)
     private int view;
 
