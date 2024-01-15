@@ -20,6 +20,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Date;
+import java.util.function.Function;
 
 @RequiredArgsConstructor
 @Component
@@ -34,8 +35,6 @@ public class JwtProvider {
     @Value("${jwt.secret.refresh-token-expiration}")
     private long refreshTokenExpiration;
 
-    private final RefreshTokenRepository refreshTokenRepository;
-
 
     private Key secretKey;
 
@@ -48,8 +47,8 @@ public class JwtProvider {
         secretKey = Keys.hmacShaKeyFor(salt.getBytes(StandardCharsets.UTF_8));
     }
 
-    public String createToken(Long id, String userPK, Role role) {
-        Claims claims = Jwts.claims().setSubject(userPK); // JWT payload 에 저장되는 정보단위
+    public String createToken(Long id, String userName, Role role) {
+        Claims claims = Jwts.claims().setSubject(userName); // JWT payload 에 저장되는 정보단위
         claims.put("role", role.toString());
         claims.put("id", String.valueOf(id));
         Date now = new Date();
@@ -62,16 +61,39 @@ public class JwtProvider {
                 .compact();
     }
 
-    public String generateRefreshToken(UserDetails userDetails) {
+    public String generateRefreshToken(Long id, String userName, Role role) {
 
+        Claims claims = Jwts.claims().setSubject(userName); // JWT payload 에 저장되는 정보단위
+        claims.put("role", role.toString());
+        claims.put("id", String.valueOf(id));
         Date now = new Date();
 
+
         return Jwts.builder()
-                .setSubject(userDetails.getUsername())
+                .setClaims(claims)
                 .setIssuedAt(now)
                 .setExpiration(new Date(now.getTime() + refreshTokenExpiration))
                 .signWith(SignatureAlgorithm.HS512, secretKey)
                 .compact();
+    }
+
+
+
+    public Date extractExpiration(String token) {
+        return extractClaim(token, Claims::getExpiration);
+    }
+
+    public Date extractIssuedAt(String token) {
+        return extractClaim(token, Claims::getIssuedAt);
+    }
+
+    public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
+        final Claims claims = extractAllClaims(token);
+        return claimsResolver.apply(claims);
+    }
+
+    private Claims extractAllClaims(String token) {
+        return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody();
     }
 
     public Authentication getAuthentication(String token) {

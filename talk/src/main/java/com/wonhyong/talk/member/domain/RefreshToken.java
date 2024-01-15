@@ -3,9 +3,10 @@ package com.wonhyong.talk.member.domain;
 import lombok.*;
 
 import javax.persistence.*;
-import java.sql.Date;
+import java.util.Date;
 
 @Entity
+@Data
 @Table(name = "refresh_token")
 public class RefreshToken {
 
