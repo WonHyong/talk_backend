@@ -5,9 +5,11 @@ import com.wonhyong.talk.board.model.Post;
 import com.wonhyong.talk.board.repository.PostRepository;
 import com.wonhyong.talk.member.domain.Member;
 import com.wonhyong.talk.member.domain.MemberDetails;
+import com.wonhyong.talk.member.domain.Role;
 import com.wonhyong.talk.member.service.MemberService;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -42,7 +44,12 @@ public class PostService {
     public PostDto create(MemberDetails member, @NonNull PostDto postDto) throws NoSuchElementException, UsernameNotFoundException {
         Member currentUser = findUser(member);
 
-        Post post = postDto.toModel(currentUser);
+        Post post = Post.builder()
+                .title(postDto.getTitle())
+                .content(postDto.getContent())
+                .member(currentUser)
+                .build();
+
         postRepository.save(post);
 
         return PostDto.from(post);
@@ -54,7 +61,9 @@ public class PostService {
 
         Member currentUser = findUser(member);
 
-        checkIsWriter(currentUser, post.getMember());
+        if (!isWriter(currentUser, post.getMember())) {
+            throw new IllegalAccessException("NO PERMISSION FOR UPDATE POST: " + id);
+        }
 
         post.update(postDto.getTitle(), postDto.getContent());
         postRepository.save(post);
@@ -68,7 +77,9 @@ public class PostService {
 
         Member currentUser = findUser(member);
 
-        checkIsWriter(currentUser, post.getMember());
+        if (!isWriter(currentUser, post.getMember())) {
+            throw new IllegalAccessException("NO PERMISSION FOR DELETE POST: " + id);
+        }
 
         postRepository.deleteById(id);
     }
@@ -83,10 +94,8 @@ public class PostService {
                 new UsernameNotFoundException("NO USER FOR " + member.getUsername()));
     }
 
-    protected void checkIsWriter(Member currentUser, Member writer) throws IllegalAccessException {
-        if (currentUser == null || writer == null) throw new IllegalAccessException("NO WRITER or USER");
-        if (!memberService.isMemberEquals(currentUser, writer)) {
-            throw new IllegalAccessException(currentUser.getName() + " not equals to writer: " + writer.getName());
-        }
+    protected boolean isWriter(Member currentUser, Member writer) {
+        if (currentUser != null && currentUser.getRole().equals(Role.ADMIN)) return true;
+        return currentUser != null && writer != null && memberService.isMemberEquals(currentUser, writer);
     }
 }

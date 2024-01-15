@@ -61,7 +61,7 @@ public class SecurityConfig{
                 .authorizeRequests()
                 // 회원가입과 로그인은 모두 승인
                 .antMatchers("/api/members/new", "/api/members/login", "/api/members", "/chat", "/ws/chat").permitAll()
-                .antMatchers("/api/**").hasRole("USER")
+                .antMatchers("/api/**").hasAnyRole("USER", "ADMIN")
                 .anyRequest().authenticated()
                 .and()
                 // JWT 인증 필터 적용

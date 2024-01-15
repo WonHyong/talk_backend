@@ -1,31 +1,33 @@
 package com.wonhyong.talk.member;
 
 import com.wonhyong.talk.member.domain.Member;
+import com.wonhyong.talk.member.domain.Role;
 import com.wonhyong.talk.member.repository.MemberRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.List;
 
-//@Component
+@Component
+@RequiredArgsConstructor
 public class MemberDataLoader {
-    private final MemberRepository memberRepository;
 
-    public MemberDataLoader(MemberRepository memberRepository) {
-        this.memberRepository = memberRepository;
-    }
+    private final MemberRepository memberRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @PostConstruct
-    private void loadBoardData() {
-        List<Member> sampleMembers = new ArrayList<>(10);
+    private void loadAdminUserData() {
+        memberRepository.deleteAll();
 
-        for (int i = 0; i < 10; i++) {
-            Member member = new Member();
-            member.setName("test" + i);
-            member.setPassword("1234");
-            sampleMembers.add(member);
-        }
+        Member admin = Member.builder()
+                .name("ADMIN")
+                .password(passwordEncoder.encode("1234"))
+                .role(Role.ADMIN)
+                .build();
 
-        memberRepository.saveAll(sampleMembers);
+        memberRepository.save(admin);
     }
 }

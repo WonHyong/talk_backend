@@ -37,16 +37,6 @@ public class PostDto extends BaseTimeDto {
         this.numComment = numComment;
     }
 
-    public Post toModel(Member member) {
-        return Post.builder()
-                .id(id)
-                .title(title)
-                .content(content)
-                .member(member)
-                .view(view)
-                .build();
-    }
-
     public static PostDto from(Post post) {
         return new PostDto(post);
     }

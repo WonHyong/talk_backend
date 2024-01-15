@@ -51,15 +51,4 @@ public class PostController {
         postService.delete(id, member);
         return ResponseEntity.ok("Post(" + id + ") deleted");
     }
-
-    //TODO to all controller handler
-    @ExceptionHandler({NoSuchElementException.class, IllegalArgumentException.class})
-    public ResponseEntity<String> handleNoElement(Exception e) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-    }
-
-    @ExceptionHandler({UsernameNotFoundException.class, IllegalAccessException.class})
-    public ResponseEntity<String> handleUserExceptions(Exception e) {
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
-    }
 }
