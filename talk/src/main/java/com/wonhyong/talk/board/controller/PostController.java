@@ -5,7 +5,6 @@ import com.wonhyong.talk.board.service.PostService;
 import com.wonhyong.talk.member.domain.MemberDetails;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -42,9 +41,16 @@ public class PostController {
         return postService.update(id, member, postRequestDto);
     }
 
+    @PostMapping("/{id}/like")
+    public String increaseLike(@PathVariable("id") Long id,
+                               @AuthenticationPrincipal MemberDetails member) throws Exception {
+        boolean success = postService.increaseLike(id, member);
+        return "Like to Post(" + id + ") is " + success;
+    }
+
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deletePost(@PathVariable("id") Long id, @AuthenticationPrincipal MemberDetails member) throws Exception {
+    public String deletePost(@PathVariable("id") Long id, @AuthenticationPrincipal MemberDetails member) throws Exception {
         postService.delete(id, member);
-        return ResponseEntity.ok("Post(" + id + ") deleted");
+        return "Post(" + id + ") deleted";
     }
 }
