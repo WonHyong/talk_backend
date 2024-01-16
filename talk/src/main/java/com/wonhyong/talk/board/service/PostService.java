@@ -1,10 +1,13 @@
 package com.wonhyong.talk.board.service;
 
 import com.wonhyong.talk.board.dto.PostDto;
+import com.wonhyong.talk.board.model.Like;
 import com.wonhyong.talk.board.model.Post;
+import com.wonhyong.talk.board.repository.LikeRepository;
 import com.wonhyong.talk.board.repository.PostRepository;
 import com.wonhyong.talk.member.domain.Member;
 import com.wonhyong.talk.member.domain.MemberDetails;
+import com.wonhyong.talk.member.domain.Role;
 import com.wonhyong.talk.member.service.MemberService;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +24,7 @@ import java.util.NoSuchElementException;
 public class PostService {
 
     private final PostRepository postRepository;
+    private final LikeRepository likeRepository;
     private final MemberService memberService;
 
     @Transactional(readOnly = true)
@@ -42,10 +46,34 @@ public class PostService {
     public PostDto create(MemberDetails member, @NonNull PostDto postDto) throws NoSuchElementException, UsernameNotFoundException {
         Member currentUser = findUser(member);
 
-        Post post = postDto.toModel(currentUser);
+        Post post = Post.builder()
+                .title(postDto.getTitle())
+                .content(postDto.getContent())
+                .member(currentUser)
+                .build();
+
         postRepository.save(post);
 
         return PostDto.from(post);
+    }
+
+    @Transactional
+    public boolean increaseLike(@NonNull Long id, MemberDetails member) {
+        Member currentUser = findUser(member);
+        Post post = findPostById(id);
+
+        if (!post.canLike(currentUser)) {
+            return false;
+        }
+
+        Like like = Like.builder()
+                .likeTo(post)
+                .member(currentUser)
+                .build();
+
+        likeRepository.save(like);
+
+        return true;
     }
 
     @Transactional
@@ -54,7 +82,9 @@ public class PostService {
 
         Member currentUser = findUser(member);
 
-        checkIsWriter(currentUser, post.getMember());
+        if (!isWriter(currentUser, post.getMember())) {
+            throw new IllegalAccessException("NO PERMISSION FOR UPDATE POST: " + id);
+        }
 
         post.update(postDto.getTitle(), postDto.getContent());
         postRepository.save(post);
@@ -68,7 +98,9 @@ public class PostService {
 
         Member currentUser = findUser(member);
 
-        checkIsWriter(currentUser, post.getMember());
+        if (!isWriter(currentUser, post.getMember())) {
+            throw new IllegalAccessException("NO PERMISSION FOR DELETE POST: " + id);
+        }
 
         postRepository.deleteById(id);
     }
@@ -83,10 +115,8 @@ public class PostService {
                 new UsernameNotFoundException("NO USER FOR " + member.getUsername()));
     }
 
-    protected void checkIsWriter(Member currentUser, Member writer) throws IllegalAccessException {
-        if (currentUser == null || writer == null) throw new IllegalAccessException("NO WRITER or USER");
-        if (!memberService.isMemberEquals(currentUser, writer)) {
-            throw new IllegalAccessException(currentUser.getName() + " not equals to writer: " + writer.getName());
-        }
+    protected boolean isWriter(Member currentUser, Member writer) {
+        if (currentUser != null && currentUser.getRole().equals(Role.ADMIN)) return true;
+        return currentUser != null && writer != null && memberService.isMemberEquals(currentUser, writer);
     }
 }

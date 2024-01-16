@@ -5,20 +5,17 @@ import com.wonhyong.talk.member.domain.Member;
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Table(name = "posts")
 @Entity
 @Getter
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class Post extends BaseTimeModel {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column
-    private Long id;
 
     //TODO title and content empty check
     @Column(length = 50, nullable = false)
@@ -33,10 +30,21 @@ public class Post extends BaseTimeModel {
     private Member member;
 
     @OneToMany(mappedBy = "post", fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
-    private List<Comment> comments;
+    private List<Comment> comments = new ArrayList<>();
 
+    @OneToMany(mappedBy = "likeTo", fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
+    private Set<Like> likes = new HashSet<>();
+
+    //TODO VIEW class 분리
     @Column(columnDefinition = "integer default 0", nullable = false)
     private int view;
+
+    @Builder
+    public Post(String title, String content, Member member) {
+        this.title = title;
+        this.content = content;
+        this.member = member;
+    }
 
     public void update(String title, String content) throws IllegalArgumentException {
         if (title == null || title.isEmpty() || content == null || content.isEmpty()) {
@@ -47,12 +55,21 @@ public class Post extends BaseTimeModel {
     }
 
     public String getMemberName() {
-        if (this.member == null) return "NONE";
         return member.getName();
     }
 
+    public int getLikeNum() {
+        return likes.size();
+    }
+
+    public boolean canLike(Member user) {
+        return likes.stream()
+                .noneMatch(
+                        like -> like.getMember().getName().equals(user.getName())
+                );
+    }
+
     public int getCommentNum() {
-        if (this.comments == null) return 0;
         return comments.size();
     }
 }

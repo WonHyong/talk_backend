@@ -1,5 +1,7 @@
 package com.wonhyong.talk.member.service;
 
+import com.wonhyong.talk.board.dto.PostDto;
+import com.wonhyong.talk.board.model.Like;
 import com.wonhyong.talk.member.domain.Member;
 import com.wonhyong.talk.member.domain.RefreshToken;
 import com.wonhyong.talk.member.dto.MemberRequestDto;
@@ -10,11 +12,12 @@ import com.wonhyong.talk.member.repository.RefreshTokenRepository;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.sql.Date;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -38,8 +41,32 @@ public class MemberService{
     public Optional<Member> findByEmail(String email) {
         return memberRepository.findByEmail(email);
     }
-    public Iterable<Member> getAllMembers() {
-        return memberRepository.findAll();
+  
+    public Iterable<MemberResponseDto> getAllMembers() {
+        return memberRepository.findAll().stream()
+                .map(member -> MemberResponseDto.builder()
+                    .name(member.getName())
+                    .build())
+                .collect(Collectors.toList());
+    }
+
+    public Iterable<PostDto> getLikePosts(@NonNull String name) {
+        Member user = memberRepository.findByName(name).orElseThrow(() ->
+                new UsernameNotFoundException("NO USER FOR " + name));
+
+        return user.getLikes().stream()
+                .map(Like::getLikeTo)
+                .map(PostDto::from)
+                .collect(Collectors.toList());
+    }
+
+    public Iterable<PostDto> getWritePosts(String name) {
+        Member user = memberRepository.findByName(name).orElseThrow(() ->
+                new UsernameNotFoundException("NO USER FOR " + name));
+
+        return user.getPosts().stream()
+                .map(PostDto::from)
+                .collect(Collectors.toList());
     }
 
     public Optional<Member> getMemberById(Long userId) {

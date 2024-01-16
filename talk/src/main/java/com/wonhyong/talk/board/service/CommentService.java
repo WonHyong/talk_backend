@@ -35,7 +35,12 @@ public class CommentService {
         Post post = postService.findPostById(postId);
         Member currentUser = postService.findUser(member);
 
-        Comment comment = commentDto.toModel(currentUser, post);
+        Comment comment = Comment.builder()
+                .content(commentDto.getContent())
+                .post(post)
+                .member(currentUser)
+                .build();
+
         commentRepository.save(comment);
 
         return CommentDto.from(comment);
@@ -47,7 +52,7 @@ public class CommentService {
                 .orElseThrow(() -> new NoSuchElementException("No Comment For: " + commentId));
 
         Member currentUser = postService.findUser(member);
-        postService.checkIsWriter(currentUser, member.getMember());
+        postService.isWriter(currentUser, member.getMember());
 
         comment.update(commentRequestDto.getContent());
         commentRepository.save(comment);

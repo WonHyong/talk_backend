@@ -37,8 +37,18 @@ public class MemberApiController {
     }
 
     @GetMapping
-    public Iterable<Member> members() {
+    public Iterable<MemberResponseDto> members() {
         return memberService.getAllMembers();
+    }
+
+    @GetMapping("/likes")
+    public Iterable<PostDto> likePosts(@RequestParam String name) {
+        return memberService.getLikePosts(name);
+    }
+
+    @GetMapping("/posts")
+    public Iterable<PostDto> writePosts(@RequestParam String name) {
+        return memberService.getWritePosts(name);
     }
 
     @PostMapping(value = "/login")

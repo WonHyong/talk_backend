@@ -1,7 +1,6 @@
 package com.wonhyong.talk.member.jwt;
 
 
-import com.wonhyong.talk.member.repository.RefreshTokenRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -60,8 +59,8 @@ public class SecurityConfig{
                 // 조건별로 요청 허용/제한 설정
                 .authorizeRequests()
                 // 회원가입과 로그인은 모두 승인
-                .antMatchers("/api/members/new", "/api/members/login", "/api/members", "api/members/auth/refresh", "/chat", "/ws/chat").permitAll()
-                .antMatchers("/api/**").hasRole("USER")
+                .antMatchers("/api/members/new", "/api/members/login", "/api/members", "/chat", "/ws/chat").permitAll()
+                .antMatchers("/api/**").hasAnyRole("USER", "ADMIN")
                 .anyRequest().authenticated()
                 .and()
                 // JWT 인증 필터 적용
