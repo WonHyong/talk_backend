@@ -1,6 +1,6 @@
 package com.wonhyong.talk.member.controller;
 
-import com.wonhyong.talk.member.domain.Member;
+import com.wonhyong.talk.board.dto.PostDto;
 import com.wonhyong.talk.member.domain.MemberDetails;
 import com.wonhyong.talk.member.dto.MemberDto;
 import com.wonhyong.talk.member.dto.MemberRequestDto;
@@ -26,14 +26,14 @@ public class MemberApiController {
     @PostMapping(value = "/new")
     public ResponseEntity<String> create(@RequestBody MemberRequestDto memberRequestDto) {
         if (memberService.findByName(memberRequestDto.getName()).isPresent()) {
-            return new ResponseEntity("이미 사용중인 아이디입니다.", HttpStatus.CONFLICT);
+            return new ResponseEntity<>("이미 사용중인 아이디입니다.", HttpStatus.CONFLICT);
         } else if (memberService.findByEmail(memberRequestDto.getEmail()).isPresent()) {
-            return new ResponseEntity("이미 사용중인 이메일입니다.", HttpStatus.CONFLICT);
+            return new ResponseEntity<>("이미 사용중인 이메일입니다.", HttpStatus.CONFLICT);
         }
         // 저장
         memberService.saveMember(memberRequestDto);
 
-        return new ResponseEntity("회원가입 성공!", HttpStatus.OK);
+        return new ResponseEntity<>("회원가입 성공!", HttpStatus.OK);
     }
 
     @GetMapping

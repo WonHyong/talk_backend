@@ -35,7 +35,6 @@ public class Post extends BaseTimeModel {
     @OneToMany(mappedBy = "likeTo", fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
     private Set<Like> likes = new HashSet<>();
 
-    //TODO VIEW class 분리
     @Column(columnDefinition = "integer default 0", nullable = false)
     private int view;
 
@@ -55,6 +54,7 @@ public class Post extends BaseTimeModel {
     }
 
     public String getMemberName() {
+        if (member == null) return "NONE";
         return member.getName();
     }
 
@@ -64,9 +64,8 @@ public class Post extends BaseTimeModel {
 
     public boolean canLike(Member user) {
         return likes.stream()
-                .noneMatch(
-                        like -> like.getMember().getName().equals(user.getName())
-                );
+                .noneMatch(like ->
+                        like.getMember().getName().equals(user.getName()));
     }
 
     public int getCommentNum() {
