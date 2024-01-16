@@ -37,6 +37,11 @@ public class MemberService{
     public Optional<Member> findByName(String name) {
         return memberRepository.findByName(name);
     }
+
+    public Optional<Member> findByEmail(String email) {
+        return memberRepository.findByEmail(email);
+    }
+  
     public Iterable<MemberResponseDto> getAllMembers() {
         return memberRepository.findAll().stream()
                 .map(member -> MemberResponseDto.builder()
@@ -96,8 +101,9 @@ public class MemberService{
 
         return MemberResponseDto.builder()
                 .name(member.getName())
-                .token(accessToken)
+                .accessToken(accessToken)
                 .refreshToken(refreshTokenValue)
+                .expiration(jwtProvider.extractExpiration(accessToken))
                 .build();
 
     }
@@ -109,11 +115,14 @@ public class MemberService{
 
             Member member = refreshTokenEntity.getMember();
 
+            final String accessToken = jwtProvider.createToken(member.getId(), member.getName(), member.getRole());
+
             if (refreshTokenEntity != null && member.getName().equals(username)) {
                 return MemberResponseDto.builder()
                         .name(member.getName())
-                        .token(jwtProvider.createToken(member.getId(), member.getName(), member.getRole()))
+                        .accessToken(accessToken)
                         .refreshToken(refreshTokenValue)
+                        .expiration(jwtProvider.extractExpiration(accessToken))
                         .build();
             }
         }

@@ -23,6 +23,8 @@ public class MemberDetails implements UserDetails {
         return collectors;
     }
 
+    public String getEmail(){ return member.getEmail(); }
+
     @Override
     public String getPassword() {
         return member.getPassword();
