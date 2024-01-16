@@ -1,6 +1,6 @@
 package com.wonhyong.talk.member.domain;
 
-import lombok.*;
+import lombok.Data;
 
 import javax.persistence.*;
 import java.util.Date;

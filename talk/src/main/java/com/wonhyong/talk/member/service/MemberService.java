@@ -13,8 +13,8 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.sql.Date;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -34,8 +34,12 @@ public class MemberService{
     public Optional<Member> findByName(String name) {
         return memberRepository.findByName(name);
     }
-    public Iterable<Member> getAllMembers() {
-        return memberRepository.findAll();
+    public Iterable<MemberResponseDto> getAllMembers() {
+        return memberRepository.findAll().stream()
+                .map(member -> MemberResponseDto.builder()
+                    .name(member.getName())
+                    .build())
+                .collect(Collectors.toList());
     }
 
     public Optional<Member> getMemberById(Long userId) {

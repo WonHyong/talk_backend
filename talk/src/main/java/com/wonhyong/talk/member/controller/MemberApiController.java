@@ -1,6 +1,5 @@
 package com.wonhyong.talk.member.controller;
 
-import com.wonhyong.talk.member.domain.Member;
 import com.wonhyong.talk.member.dto.MemberRequestDto;
 import com.wonhyong.talk.member.dto.MemberResponseDto;
 import com.wonhyong.talk.member.jwt.JwtRefreshRequest;
@@ -32,7 +31,7 @@ public class MemberApiController {
     }
 
     @GetMapping
-    public Iterable<Member> members() {
+    public Iterable<MemberResponseDto> members() {
         return memberService.getAllMembers();
     }
 
