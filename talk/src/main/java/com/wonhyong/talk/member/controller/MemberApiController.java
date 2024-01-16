@@ -1,6 +1,8 @@
 package com.wonhyong.talk.member.controller;
 
 import com.wonhyong.talk.member.domain.Member;
+import com.wonhyong.talk.member.domain.MemberDetails;
+import com.wonhyong.talk.member.dto.MemberDto;
 import com.wonhyong.talk.member.dto.MemberRequestDto;
 import com.wonhyong.talk.member.dto.MemberResponseDto;
 import com.wonhyong.talk.member.jwt.JwtRefreshRequest;
@@ -8,6 +10,7 @@ import com.wonhyong.talk.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 
@@ -21,14 +24,16 @@ public class MemberApiController {
     private final MemberService memberService;
 
     @PostMapping(value = "/new")
-    public String create(@RequestBody MemberRequestDto memberRequestDto) {
+    public ResponseEntity<String> create(@RequestBody MemberRequestDto memberRequestDto) {
         if (memberService.findByName(memberRequestDto.getName()).isPresent()) {
-            return "failed";
+            return new ResponseEntity("이미 사용중인 아이디입니다.", HttpStatus.CONFLICT);
+        } else if (memberService.findByEmail(memberRequestDto.getEmail()).isPresent()) {
+            return new ResponseEntity("이미 사용중인 이메일입니다.", HttpStatus.CONFLICT);
         }
         // 저장
         memberService.saveMember(memberRequestDto);
 
-        return "Registration successful for user: " + memberRequestDto.getName();
+        return new ResponseEntity("회원가입 성공!", HttpStatus.OK);
     }
 
     @GetMapping
@@ -43,11 +48,17 @@ public class MemberApiController {
 
     @PostMapping("/auth/refresh")
     public ResponseEntity<MemberResponseDto> refreshAuthenticationToken(@RequestBody JwtRefreshRequest refreshRequest) throws Exception{
-        System.out.println(refreshRequest.getRefreshToken());
         try {
             return new ResponseEntity<>(memberService.refreshAccessToken(refreshRequest.getRefreshToken()), HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
+    }
+
+    @PostMapping(value = "/mypage")
+    public ResponseEntity<MemberDto> myPage(@AuthenticationPrincipal MemberDetails member) {
+        return new ResponseEntity<>(MemberDto.builder().
+                name(member.getUsername())
+                .email(member.getEmail()).build(), HttpStatus.OK);
     }
 }

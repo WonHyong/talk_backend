@@ -23,6 +23,8 @@ public class Member {
 
     private String password;
 
+    private String email;
+
     @Column(name = "authority")
     @Builder.Default
     @Enumerated(EnumType.STRING)
