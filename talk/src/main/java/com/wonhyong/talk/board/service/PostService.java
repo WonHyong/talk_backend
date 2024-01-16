@@ -1,7 +1,9 @@
 package com.wonhyong.talk.board.service;
 
 import com.wonhyong.talk.board.dto.PostDto;
+import com.wonhyong.talk.board.model.Like;
 import com.wonhyong.talk.board.model.Post;
+import com.wonhyong.talk.board.repository.LikeRepository;
 import com.wonhyong.talk.board.repository.PostRepository;
 import com.wonhyong.talk.member.domain.Member;
 import com.wonhyong.talk.member.domain.MemberDetails;
@@ -22,6 +24,7 @@ import java.util.NoSuchElementException;
 public class PostService {
 
     private final PostRepository postRepository;
+    private final LikeRepository likeRepository;
     private final MemberService memberService;
 
     @Transactional(readOnly = true)
@@ -52,6 +55,25 @@ public class PostService {
         postRepository.save(post);
 
         return PostDto.from(post);
+    }
+
+    @Transactional
+    public boolean increaseLike(@NonNull Long id, MemberDetails member) {
+        Member currentUser = findUser(member);
+        Post post = findPostById(id);
+
+        if (!post.canLike(currentUser)) {
+            return false;
+        }
+
+        Like like = Like.builder()
+                .likeTo(post)
+                .member(currentUser)
+                .build();
+
+        likeRepository.save(like);
+
+        return true;
     }
 
     @Transactional

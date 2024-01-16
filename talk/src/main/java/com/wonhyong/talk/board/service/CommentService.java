@@ -35,7 +35,12 @@ public class CommentService {
         Post post = postService.findPostById(postId);
         Member currentUser = postService.findUser(member);
 
-        Comment comment = commentDto.toModel(currentUser, post);
+        Comment comment = Comment.builder()
+                .content(commentDto.getContent())
+                .post(post)
+                .member(currentUser)
+                .build();
+
         commentRepository.save(comment);
 
         return CommentDto.from(comment);

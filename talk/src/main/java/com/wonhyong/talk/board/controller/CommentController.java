@@ -4,7 +4,6 @@ import com.wonhyong.talk.board.dto.CommentDto;
 import com.wonhyong.talk.board.service.CommentService;
 import com.wonhyong.talk.member.domain.MemberDetails;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -37,8 +36,8 @@ public class CommentController {
     }
 
     @DeleteMapping("/{commentId}")
-    public ResponseEntity<String> deleteComment(@PathVariable("commentId") Long id) {
+    public String deleteComment(@PathVariable("commentId") Long id) {
         commentService.delete(id);
-        return ResponseEntity.ok("Comment(" + id + ") deleted");
+        return "Comment(" + id + ") deleted";
     }
 }

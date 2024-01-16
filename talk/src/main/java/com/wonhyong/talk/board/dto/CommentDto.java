@@ -2,8 +2,6 @@ package com.wonhyong.talk.board.dto;
 
 import com.wonhyong.talk.base.dto.BaseTimeDto;
 import com.wonhyong.talk.board.model.Comment;
-import com.wonhyong.talk.board.model.Post;
-import com.wonhyong.talk.member.domain.Member;
 import lombok.Getter;
 
 @Getter
@@ -27,15 +25,6 @@ public class CommentDto extends BaseTimeDto {
         this.id = id;
         this.content = content;
         this.writer = writer;
-    }
-
-    public Comment toModel(Member member, Post post) {
-        return Comment.builder()
-                .id(id)
-                .post(post)
-                .content(content)
-                .member(member)
-                .build();
     }
 
     public static CommentDto from(Comment comment) {

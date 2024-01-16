@@ -17,11 +17,6 @@ import javax.persistence.*;
 @NoArgsConstructor
 public class Comment extends BaseTimeModel {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column
-    private Long id;
-
     @Column
     private String content;
 
