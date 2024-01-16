@@ -1,5 +1,6 @@
 package com.wonhyong.talk.member.domain;
 
+import com.wonhyong.talk.board.model.Comment;
 import com.wonhyong.talk.board.model.Like;
 import com.wonhyong.talk.board.model.Post;
 import lombok.*;
@@ -36,4 +37,7 @@ public class Member {
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.REMOVE)
     private List<Like> likes = new ArrayList<>();
+
+    @OneToMany(mappedBy = "member", cascade = CascadeType.REMOVE)
+    private List<Comment> comments = new ArrayList<>();
 }

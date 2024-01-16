@@ -1,5 +1,6 @@
 package com.wonhyong.talk.member.service;
 
+import com.wonhyong.talk.board.dto.CommentDto;
 import com.wonhyong.talk.board.dto.PostDto;
 import com.wonhyong.talk.board.model.Like;
 import com.wonhyong.talk.member.domain.Member;
@@ -66,6 +67,15 @@ public class MemberService{
 
         return user.getPosts().stream()
                 .map(PostDto::from)
+                .collect(Collectors.toList());
+    }
+
+    public Iterable<CommentDto> getWriteComments(String name) {
+        Member user = memberRepository.findByName(name).orElseThrow(() ->
+                new UsernameNotFoundException("NO USER FOR " + name));
+
+        return user.getComments().stream()
+                .map(CommentDto::from)
                 .collect(Collectors.toList());
     }
 
