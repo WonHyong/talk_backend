@@ -35,7 +35,7 @@ public class Post extends BaseTimeModel {
     @OneToMany(mappedBy = "likeTo", fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
     private Set<Like> likes = new HashSet<>();
 
-    //TODO LIKE VIEW class 분리
+    //TODO VIEW class 분리
     @Column(columnDefinition = "integer default 0", nullable = false)
     private int view;
 

@@ -1,6 +1,8 @@
 package com.wonhyong.talk;
 
+import com.wonhyong.talk.board.model.Comment;
 import com.wonhyong.talk.board.model.Post;
+import com.wonhyong.talk.board.repository.CommentRepository;
 import com.wonhyong.talk.board.repository.PostRepository;
 import com.wonhyong.talk.chat.dto.ChatRoom;
 import com.wonhyong.talk.chat.entity.ChatRoomEntity;
@@ -24,6 +26,7 @@ public class TestDataLoader {
 
     private final PostRepository postRepository;
     private final MemberRepository memberRepository;
+    private final CommentRepository commentRepository;
     private final ChatRoomRepository chatRoomRepository;
     private final PasswordEncoder passwordEncoder;
 
@@ -31,12 +34,17 @@ public class TestDataLoader {
     private void loadTestData() {
         clearAllData();
 
-        String adminName = "ADMIN";
-        String adminPw = "1234";
-        loadAdminUserData(adminName, adminPw);
+        Member admin = makeMember("ADMIN", "1234", Role.ADMIN);
+        Member user1 = makeMember("USER1", "1234", Role.USER);
+        Member user2 = makeMember("USER2", "1234", Role.USER);
 
-        Member samplePostWriter = memberRepository.findByName(adminName).get();
-        loadBoardData(30, samplePostWriter);
+        memberRepository.saveAll(List.of(admin, user1, user2));
+
+        loadBoardData(10, admin);
+        loadBoardData(10, user1);
+        loadBoardData(10, user2);
+
+        loadCommentData(5, user2);
 
         //loadChatRoomData(10);
     }
@@ -47,14 +55,12 @@ public class TestDataLoader {
         chatRoomRepository.deleteAll();
     }
 
-    private void loadAdminUserData(String name, String password) {
-        Member admin = Member.builder()
+    private Member makeMember(String name, String password, Role role) {
+        return Member.builder()
                 .name(name)
                 .password(passwordEncoder.encode(password))
-                .role(Role.ADMIN)
+                .role(role)
                 .build();
-
-        memberRepository.save(admin);
     }
 
     private void loadBoardData(int size, Member writer) {
@@ -71,6 +77,26 @@ public class TestDataLoader {
         }
 
         postRepository.saveAll(sampleBoards);
+    }
+
+    private void loadCommentData(int size, Member writer) {
+        Iterable<Post> targetPosts = postRepository.findAll();
+
+        List<Comment> sampleComments = new ArrayList<>(size);
+
+        for (Post target : targetPosts) {
+            for (int i=1; i<=size; i++) {
+                Comment comment = Comment.builder()
+                        .content("comment " + i)
+                        .post(target)
+                        .member(writer)
+                        .build();
+
+                sampleComments.add(comment);
+            }
+        }
+
+        commentRepository.saveAll(sampleComments);
     }
 
     private void loadChatRoomData(int size) {
