@@ -1,5 +1,6 @@
 package com.wonhyong.talk.member.controller;
 
+import com.wonhyong.talk.board.dto.PostDto;
 import com.wonhyong.talk.member.dto.MemberRequestDto;
 import com.wonhyong.talk.member.dto.MemberResponseDto;
 import com.wonhyong.talk.member.jwt.JwtRefreshRequest;
@@ -33,6 +34,16 @@ public class MemberApiController {
     @GetMapping
     public Iterable<MemberResponseDto> members() {
         return memberService.getAllMembers();
+    }
+
+    @GetMapping("/likes")
+    public Iterable<PostDto> likePosts(@RequestParam String name) {
+        return memberService.getLikePosts(name);
+    }
+
+    @GetMapping("/posts")
+    public Iterable<PostDto> writePosts(@RequestParam String name) {
+        return memberService.getWritePosts(name);
     }
 
     @PostMapping(value = "/login")
