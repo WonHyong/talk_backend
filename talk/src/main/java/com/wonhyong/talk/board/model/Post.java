@@ -29,6 +29,7 @@ public class Post extends BaseTimeModel {
     @JoinColumn(name = "member_id")
     private Member member;
 
+    // todo: 개수만 필요함 -> 최적화 가능할듯?
     @OneToMany(mappedBy = "post", fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
     private List<Comment> comments = new ArrayList<>();
 
@@ -62,10 +63,9 @@ public class Post extends BaseTimeModel {
         return likes.size();
     }
 
-    public boolean canLike(Member user) {
+    public boolean isAlreadyLiked(Member user) {
         return likes.stream()
-                .noneMatch(like ->
-                        like.getMember().getName().equals(user.getName()));
+                .anyMatch(like -> like.getMember().getName().equals(user.getName()));
     }
 
     public int getCommentNum() {
