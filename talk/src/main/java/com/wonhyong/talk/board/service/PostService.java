@@ -28,24 +28,30 @@ public class PostService {
     private final MemberService memberService;
 
     @Transactional(readOnly = true)
-    public Slice<PostDto> getPage(Pageable pageable, MemberDetails member) {
-        Member currentUser = findUser(member);
-        return postRepository.findSliceBy(pageable).map(post -> PostDto.from(post, currentUser));
+    public Slice<PostDto.ListResponse> getPage(MemberDetails member, Pageable pageable) {
+        final Member currentUser = findUser(member);
+        return postRepository.findSliceBy(pageable).map(post -> {
+            int like = post.getLikeNum(currentUser);
+            int commentNum = post.getCommentNum();
+            return PostDto.ListResponse.from(post, like, commentNum);});
     }
 
     @Transactional
-    public PostDto findById(MemberDetails member, @NonNull Long id) throws NoSuchElementException {
-        Member currentUser = findUser(member);
+    public PostDto.DetailResponse findById(MemberDetails member, @NonNull Long id) throws NoSuchElementException {
+        final Member currentUser = findUser(member);
         Post post = findPostById(id);
 
         // increase view count
         postRepository.increaseView(id);
 
-        return PostDto.from(post, currentUser);
+        int like = post.getLikeNum(currentUser);
+        int commentNum = post.getCommentNum();
+
+        return PostDto.DetailResponse.from(post, like, commentNum);
     }
 
     @Transactional
-    public PostDto create(MemberDetails member, @NonNull PostDto postDto) throws NoSuchElementException, UsernameNotFoundException {
+    public PostDto.DetailResponse create(MemberDetails member, @NonNull PostDto.Request postDto) throws NoSuchElementException {
         Member currentUser = findUser(member);
 
         Post post = Post.builder()
@@ -56,7 +62,7 @@ public class PostService {
 
         postRepository.save(post);
 
-        return PostDto.from(post, currentUser);
+        return PostDto.DetailResponse.from(post, 0, 0);
     }
 
     @Transactional
@@ -64,7 +70,7 @@ public class PostService {
         Member currentUser = findUser(member);
         Post post = findPostById(id);
 
-        if (post.isAlreadyLiked(currentUser)) {
+        if (!post.isAlreadyLiked(currentUser)) {
             return false;
         }
 
@@ -79,30 +85,24 @@ public class PostService {
     }
 
     @Transactional
-    public PostDto update(Long id, MemberDetails member, @NonNull PostDto postDto) throws NoSuchElementException, UsernameNotFoundException, IllegalAccessException {
+    public PostDto.DetailResponse update(Long id, MemberDetails member, @NonNull PostDto.Request postDto) throws NoSuchElementException, UsernameNotFoundException, IllegalAccessException {
         Post post = findPostById(id);
-
         Member currentUser = findUser(member);
 
-        if (!isWriter(currentUser, post.getMember())) {
-            throw new IllegalAccessException("NO PERMISSION FOR UPDATE POST: " + id);
-        }
+        checkIsWriter(currentUser, post.getMember());
 
         post.update(postDto.getTitle(), postDto.getContent());
         postRepository.save(post);
 
-        return PostDto.from(post, currentUser);
+        return PostDto.DetailResponse.from(post, post.getLikeNum(currentUser), post.getCommentNum());
     }
 
     @Transactional
     public void delete(Long id, MemberDetails member) throws NoSuchElementException, UsernameNotFoundException, IllegalAccessException {
         Post post = findPostById(id);
-
         Member currentUser = findUser(member);
 
-        if (!isWriter(currentUser, post.getMember())) {
-            throw new IllegalAccessException("NO PERMISSION FOR DELETE POST: " + id);
-        }
+        checkIsWriter(currentUser, post.getMember());
 
         postRepository.deleteById(id);
     }
@@ -117,8 +117,10 @@ public class PostService {
                 new UsernameNotFoundException("NO USER FOR " + member.getUsername()));
     }
 
-    protected boolean isWriter(Member currentUser, Member writer) {
-        if (currentUser != null && currentUser.getRole().equals(Role.ADMIN)) return true;
-        return currentUser != null && writer != null && memberService.isMemberEquals(currentUser, writer);
+    protected void checkIsWriter(Member currentUser, Member writer) throws IllegalAccessException {
+        if ((currentUser != null && !currentUser.getRole().equals(Role.ADMIN)) ||
+            (currentUser == null || writer == null || !memberService.isMemberEquals(currentUser, writer))) {
+            throw new IllegalAccessException("수정 권한이 없습니다.");
+        }
     }
 }

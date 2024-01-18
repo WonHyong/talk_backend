@@ -16,21 +16,21 @@ public class CommentController {
     private final CommentService commentService;
 
     @GetMapping
-    public Iterable<CommentDto> getAllCommentsInPost(@PathVariable("postId") Long postId) {
+    public Iterable<CommentDto.Response> getAllCommentsInPost(@PathVariable("postId") Long postId) {
         return commentService.findAllCommentsInPost(postId);
     }
 
     @PostMapping
-    public CommentDto createComment(@PathVariable("postId") Long postId,
+    public CommentDto.Response createComment(@PathVariable("postId") Long postId,
                                     @AuthenticationPrincipal MemberDetails member,
-                                    @RequestBody CommentDto commentRequestDto) {
+                                    @RequestBody CommentDto.Request commentRequestDto) {
         return commentService.create(postId, member, commentRequestDto);
     }
 
     @PutMapping("/{commentId}")
-    public CommentDto updateComment(@PathVariable("commentId") Long commentId,
+    public CommentDto.Response updateComment(@PathVariable("commentId") Long commentId,
                                     @AuthenticationPrincipal MemberDetails member,
-                                    @RequestBody CommentDto commentRequestDto) throws IllegalAccessException {
+                                    @RequestBody CommentDto.Request commentRequestDto) throws IllegalAccessException {
 
         return commentService.update(commentId, member, commentRequestDto);
     }

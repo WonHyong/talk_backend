@@ -22,16 +22,16 @@ public class CommentService {
     private final PostService postService;
 
     @Transactional(readOnly = true)
-    public Iterable<CommentDto> findAllCommentsInPost(@NonNull Long postId) {
+    public Iterable<CommentDto.Response> findAllCommentsInPost(@NonNull Long postId) {
         Post post = postService.findPostById(postId);
 
         return post.getComments().stream()
-                .map(CommentDto::from)
+                .map(CommentDto.Response::from)
                 .collect(Collectors.toList());
     }
 
     @Transactional
-    public CommentDto create(Long postId, MemberDetails member, CommentDto commentDto) {
+    public CommentDto.Response create(Long postId, MemberDetails member, CommentDto.Request commentDto) {
         Post post = postService.findPostById(postId);
         Member currentUser = postService.findUser(member);
 
@@ -43,27 +43,27 @@ public class CommentService {
 
         commentRepository.save(comment);
 
-        return CommentDto.from(comment);
+        return CommentDto.Response.from(comment);
     }
 
     @Transactional
-    public CommentDto update(Long commentId, MemberDetails member, CommentDto commentRequestDto) throws IllegalAccessException {
+    public CommentDto.Response update(Long commentId, MemberDetails member, CommentDto.Request commentRequestDto) throws IllegalAccessException {
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new NoSuchElementException("No Comment For: " + commentId));
 
         Member currentUser = postService.findUser(member);
-        postService.isWriter(currentUser, member.getMember());
+        postService.checkIsWriter(currentUser, member.getMember());
 
         comment.update(commentRequestDto.getContent());
         commentRepository.save(comment);
 
-        return CommentDto.from(comment);
+        return CommentDto.Response.from(comment);
     }
 
     @Transactional
     public void delete(Long commentId) {
-        Comment comment = commentRepository.findById(commentId)
-                .orElseThrow(() -> new NoSuchElementException("No Comment For: " + commentId));
+        commentRepository.findById(commentId).orElseThrow(() ->
+                new NoSuchElementException("No Comment For: " + commentId));
         commentRepository.deleteById(commentId);
     }
 }
