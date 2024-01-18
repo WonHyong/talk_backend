@@ -28,6 +28,7 @@ public class Post extends BaseTimeModel {
     @JoinColumn(name = "member_id")
     private Member member;
 
+    // todo: 개수만 필요함 -> 최적화 가능할듯?
     @OneToMany(mappedBy = "post", fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
     private List<Comment> comments = new ArrayList<>();
 
