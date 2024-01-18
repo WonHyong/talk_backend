@@ -70,7 +70,7 @@ public class Post extends BaseTimeModel {
     }
 
     public boolean isAlreadyLiked(Member user) {
-        return likes.stream().noneMatch(like ->
+        return likes.stream().anyMatch(like ->
                         like.getMember().getName().equals(user.getName()));
     }
 }

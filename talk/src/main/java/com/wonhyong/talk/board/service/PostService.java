@@ -70,7 +70,7 @@ public class PostService {
         Member currentUser = findUser(member);
         Post post = findPostById(id);
 
-        if (!post.isAlreadyLiked(currentUser)) {
+        if (post.isAlreadyLiked(currentUser)) {
             return false;
         }
 
