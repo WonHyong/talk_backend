@@ -58,6 +58,7 @@ public class TestDataLoader {
     private Member makeMember(String name, String password, Role role) {
         return Member.builder()
                 .name(name)
+                .email(name + "@lo.com")
                 .password(passwordEncoder.encode(password))
                 .role(role)
                 .build();
