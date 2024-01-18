@@ -5,6 +5,11 @@ spring:
     username: root
     password: 123456
 
+  redis:
+    host: 127.0.0.1
+    port: 6389
+    password: 123456
+
   devtools:
     restart:
       enabled: true

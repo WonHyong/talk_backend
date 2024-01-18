@@ -1,15 +1,15 @@
 package com.wonhyong.talk.member.service;
 
+import com.wonhyong.talk.Redis.service.RedisService;
 import com.wonhyong.talk.board.dto.CommentDto;
 import com.wonhyong.talk.board.dto.PostDto;
 import com.wonhyong.talk.board.model.Like;
 import com.wonhyong.talk.member.domain.Member;
-import com.wonhyong.talk.member.domain.RefreshToken;
+import com.wonhyong.talk.member.domain.MemberDetails;
 import com.wonhyong.talk.member.dto.MemberRequestDto;
 import com.wonhyong.talk.member.dto.MemberResponseDto;
 import com.wonhyong.talk.member.jwt.JwtProvider;
 import com.wonhyong.talk.member.repository.MemberRepository;
-import com.wonhyong.talk.member.repository.RefreshTokenRepository;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -27,7 +27,8 @@ public class MemberService{
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtProvider jwtProvider;
-    private final RefreshTokenRepository refreshTokenRepository;
+    private final RedisService redisService;
+    private final MemberDetailsService memberDetailsService;
 
     public void saveMember(MemberRequestDto memberRequestDto) {
         Member member = memberRequestDto.toEntity();
@@ -99,15 +100,12 @@ public class MemberService{
             throw new BadCredentialsException("잘못된 계정정보입니다.");
         }
 
-        final String accessToken = jwtProvider.createToken(member.getId(), member.getName(), member.getRole());
-        final String refreshTokenValue = jwtProvider.generateRefreshToken(member.getId(), member.getName(), member.getRole());
+        MemberDetails memberDetails = (MemberDetails) memberDetailsService.loadUserByUsername(member.getName());
 
-        RefreshToken refreshToken = new RefreshToken();
-        refreshToken.setTokenValue(refreshTokenValue);
-        refreshToken.setMember(member);
-        refreshToken.setCreatedAt(jwtProvider.extractIssuedAt(refreshTokenValue));
-        refreshToken.setExpirationTime(jwtProvider.extractExpiration(refreshTokenValue));
-        refreshTokenRepository.save(refreshToken);
+        final String accessToken = jwtProvider.createToken(memberDetails);
+        final String refreshTokenValue = jwtProvider.generateRefreshToken(memberDetails);
+
+        redisService.saveRefreshToken(memberDetails.getUsername(), refreshTokenValue);
 
         return MemberResponseDto.builder()
                 .name(member.getName())
@@ -118,18 +116,16 @@ public class MemberService{
 
     }
 
-    public MemberResponseDto refreshAccessToken(String refreshTokenValue) {
+    public MemberResponseDto refreshAccessToken(String userName, String refreshTokenValue) {
         if (jwtProvider.validateToken(refreshTokenValue)) {
-            String username = jwtProvider.getUserPk(refreshTokenValue);
-            RefreshToken refreshTokenEntity = refreshTokenRepository.findByTokenValue(refreshTokenValue);
+            String tokenUserName = jwtProvider.getUserPk(refreshTokenValue);
+            String refreshToken = redisService.getRefreshToken(userName);
 
-            Member member = refreshTokenEntity.getMember();
+            final String accessToken = jwtProvider.createToken((MemberDetails) memberDetailsService.loadUserByUsername(tokenUserName));
 
-            final String accessToken = jwtProvider.createToken(member.getId(), member.getName(), member.getRole());
-
-            if (refreshTokenEntity != null && member.getName().equals(username)) {
+            if (userName.equals(tokenUserName) && refreshToken.equals(refreshTokenValue)) {
                 return MemberResponseDto.builder()
-                        .name(member.getName())
+                        .name(userName)
                         .accessToken(accessToken)
                         .refreshToken(refreshTokenValue)
                         .expiration(jwtProvider.extractExpiration(accessToken))

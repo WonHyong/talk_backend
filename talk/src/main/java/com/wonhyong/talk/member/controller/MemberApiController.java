@@ -6,7 +6,7 @@ import com.wonhyong.talk.member.domain.MemberDetails;
 import com.wonhyong.talk.member.dto.MemberDto;
 import com.wonhyong.talk.member.dto.MemberRequestDto;
 import com.wonhyong.talk.member.dto.MemberResponseDto;
-import com.wonhyong.talk.member.jwt.JwtRefreshRequest;
+import com.wonhyong.talk.member.dto.JwtRefreshRequestDto;
 import com.wonhyong.talk.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -63,9 +63,9 @@ public class MemberApiController {
     }
 
     @PostMapping("/auth/refresh")
-    public ResponseEntity<MemberResponseDto> refreshAuthenticationToken(@RequestBody JwtRefreshRequest refreshRequest) throws Exception{
+    public ResponseEntity<MemberResponseDto> refreshAuthenticationToken(@RequestBody JwtRefreshRequestDto refreshRequest) throws Exception{
         try {
-            return new ResponseEntity<>(memberService.refreshAccessToken(refreshRequest.getRefreshToken()), HttpStatus.OK);
+            return new ResponseEntity<>(memberService.refreshAccessToken(refreshRequest.getUserName(), refreshRequest.getRefreshToken()), HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }

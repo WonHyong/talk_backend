@@ -1,5 +1,6 @@
 package com.wonhyong.talk.member.jwt;
 
+import com.wonhyong.talk.member.domain.MemberDetails;
 import com.wonhyong.talk.member.domain.Role;
 import com.wonhyong.talk.member.service.MemberDetailsService;
 import io.jsonwebtoken.Claims;
@@ -46,10 +47,10 @@ public class JwtProvider {
         secretKey = Keys.hmacShaKeyFor(salt.getBytes(StandardCharsets.UTF_8));
     }
 
-    public String createToken(Long id, String userName, Role role) {
-        Claims claims = Jwts.claims().setSubject(userName); // JWT payload 에 저장되는 정보단위
-        claims.put("role", role.toString());
-        claims.put("id", String.valueOf(id));
+    public String createToken(MemberDetails member) {
+        Claims claims = Jwts.claims().setSubject(member.getUsername()); // JWT payload 에 저장되는 정보단위
+        claims.put("role", member.getRole().toString());
+        claims.put("id", String.valueOf(member.getId()));
         Date now = new Date();
         return Jwts.builder()
                 .setClaims(claims) // 정보 저장
@@ -60,11 +61,11 @@ public class JwtProvider {
                 .compact();
     }
 
-    public String generateRefreshToken(Long id, String userName, Role role) {
+    public String generateRefreshToken(MemberDetails member) {
 
-        Claims claims = Jwts.claims().setSubject(userName); // JWT payload 에 저장되는 정보단위
-        claims.put("role", role.toString());
-        claims.put("id", String.valueOf(id));
+        Claims claims = Jwts.claims().setSubject(member.getUsername()); // JWT payload 에 저장되는 정보단위
+        claims.put("role", member.getRole().toString());
+        claims.put("id", String.valueOf(member.getId()));
         Date now = new Date();
 
 
