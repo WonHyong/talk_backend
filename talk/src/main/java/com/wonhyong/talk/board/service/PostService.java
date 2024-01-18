@@ -28,18 +28,20 @@ public class PostService {
     private final MemberService memberService;
 
     @Transactional(readOnly = true)
-    public Slice<PostDto> getPage(Pageable pageable) {
-        return postRepository.findSliceBy(pageable).map(PostDto::from);
+    public Slice<PostDto> getPage(Pageable pageable, MemberDetails member) {
+        Member currentUser = findUser(member);
+        return postRepository.findSliceBy(pageable).map(post -> PostDto.from(post, currentUser));
     }
 
     @Transactional
-    public PostDto findById(@NonNull Long id) throws NoSuchElementException {
+    public PostDto findById(MemberDetails member, @NonNull Long id) throws NoSuchElementException {
+        Member currentUser = findUser(member);
         Post post = findPostById(id);
 
         // increase view count
         postRepository.increaseView(id);
 
-        return PostDto.from(post);
+        return PostDto.from(post, currentUser);
     }
 
     @Transactional
@@ -54,7 +56,7 @@ public class PostService {
 
         postRepository.save(post);
 
-        return PostDto.from(post);
+        return PostDto.from(post, currentUser);
     }
 
     @Transactional
@@ -62,7 +64,7 @@ public class PostService {
         Member currentUser = findUser(member);
         Post post = findPostById(id);
 
-        if (!post.canLike(currentUser)) {
+        if (post.isAlreadyLiked(currentUser)) {
             return false;
         }
 
@@ -89,7 +91,7 @@ public class PostService {
         post.update(postDto.getTitle(), postDto.getContent());
         postRepository.save(post);
 
-        return PostDto.from(post);
+        return PostDto.from(post, currentUser);
     }
 
     @Transactional

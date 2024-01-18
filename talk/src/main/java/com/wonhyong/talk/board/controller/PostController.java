@@ -18,13 +18,13 @@ public class PostController {
     private final PostService postService;
 
     @GetMapping
-    public Iterable<PostDto> getPosts(Pageable pageable) throws Exception {
-        return postService.getPage(pageable);
+    public Iterable<PostDto> getPosts(Pageable pageable, @AuthenticationPrincipal MemberDetails member) throws Exception {
+        return postService.getPage(pageable, member);
     }
 
     @GetMapping("/{id}")
-    public PostDto getPostById(@PathVariable("id") Long id) throws Exception {
-        return postService.findById(id);
+    public PostDto getPostById(@PathVariable("id")Long id, @AuthenticationPrincipal MemberDetails member) throws Exception {
+        return postService.findById(member, id);
     }
 
     @PostMapping
