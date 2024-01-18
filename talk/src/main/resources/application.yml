@@ -7,7 +7,7 @@ spring:
 
   redis:
     host: redis
-    port: 6389
+    port: 6379
     password: 123456
 
   devtools:
