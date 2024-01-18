@@ -51,31 +51,31 @@ public class MemberService{
                 .collect(Collectors.toList());
     }
 
-    public Iterable<PostDto> getLikePosts(@NonNull String name) {
+    public Iterable<PostDto.ListResponse> getLikePosts(@NonNull String name) {
         Member user = memberRepository.findByName(name).orElseThrow(() ->
                 new UsernameNotFoundException("NO USER FOR " + name));
 
         return user.getLikes().stream()
                 .map(Like::getLikeTo)
-                .map(PostDto::from)
+                .map(PostDto.ListResponse::from)
                 .collect(Collectors.toList());
     }
 
-    public Iterable<PostDto> getWritePosts(String name) {
+    public Iterable<PostDto.ListResponse> getWritePosts(String name) {
         Member user = memberRepository.findByName(name).orElseThrow(() ->
                 new UsernameNotFoundException("NO USER FOR " + name));
 
         return user.getPosts().stream()
-                .map(PostDto::from)
+                .map(PostDto.ListResponse::from)
                 .collect(Collectors.toList());
     }
 
-    public Iterable<CommentDto> getWriteComments(String name) {
+    public Iterable<CommentDto.Response> getWriteComments(String name) {
         Member user = memberRepository.findByName(name).orElseThrow(() ->
                 new UsernameNotFoundException("NO USER FOR " + name));
 
         return user.getComments().stream()
-                .map(CommentDto::from)
+                .map(CommentDto.Response::from)
                 .collect(Collectors.toList());
     }
 
@@ -91,7 +91,7 @@ public class MemberService{
         return a.getName().equals(b.getName());
     }
 
-    public MemberResponseDto login(MemberRequestDto request) throws Exception {
+    public MemberResponseDto login(MemberRequestDto request) {
         Member member = memberRepository.findByName(request.getName()).orElseThrow(() ->
                 new BadCredentialsException("잘못된 계정정보입니다."));
 
@@ -127,7 +127,7 @@ public class MemberService{
 
             final String accessToken = jwtProvider.createToken(member.getId(), member.getName(), member.getRole());
 
-            if (refreshTokenEntity != null && member.getName().equals(username)) {
+            if (member.getName().equals(username)) {
                 return MemberResponseDto.builder()
                         .name(member.getName())
                         .accessToken(accessToken)

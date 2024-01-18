@@ -43,17 +43,17 @@ public class MemberApiController {
     }
 
     @GetMapping("/likes")
-    public Iterable<PostDto> getLikedPosts(@RequestParam String name) {
+    public Iterable<PostDto.ListResponse> getLikedPosts(@RequestParam String name) {
         return memberService.getLikePosts(name);
     }
 
     @GetMapping("/posts")
-    public Iterable<PostDto> getWrotePosts(@RequestParam String name) {
+    public Iterable<PostDto.ListResponse> getWrotePosts(@RequestParam String name) {
         return memberService.getWritePosts(name);
     }
 
     @GetMapping("/comments")
-    public Iterable<CommentDto> getWroteComments(@RequestParam String name) {
+    public Iterable<CommentDto.Response> getWroteComments(@RequestParam String name) {
         return memberService.getWriteComments(name);
     }
 
@@ -63,7 +63,7 @@ public class MemberApiController {
     }
 
     @PostMapping("/auth/refresh")
-    public ResponseEntity<MemberResponseDto> refreshAuthenticationToken(@RequestBody JwtRefreshRequest refreshRequest) throws Exception{
+    public ResponseEntity<MemberResponseDto> refreshAuthenticationToken(@RequestBody JwtRefreshRequest refreshRequest) {
         try {
             return new ResponseEntity<>(memberService.refreshAccessToken(refreshRequest.getRefreshToken()), HttpStatus.OK);
         } catch (Exception e) {
