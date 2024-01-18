@@ -1,33 +1,39 @@
 package com.wonhyong.talk.board.dto;
 
-import com.wonhyong.talk.base.dto.BaseTimeDto;
+import com.wonhyong.talk.base.dto.BaseTimeResponseDto;
 import com.wonhyong.talk.board.model.Comment;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
-@Getter
-public class CommentDto extends BaseTimeDto {
+import javax.validation.constraints.NotBlank;
 
-    private final Long id;
-    private final String content;
-    private final String writer;
+public class CommentDto {
 
-    private CommentDto(Comment comment) {
-        super(comment); // set BaseTimeDto
-
-        this.id = comment.getId();
-        this.content = comment.getContent();
-        this.writer = comment.getMemberName();
+    @Getter
+    @RequiredArgsConstructor
+    public static class Request {
+        @NotBlank(message = "댓글 내용이 필요합니다.")
+        private final String content;
     }
 
-    private CommentDto(Long id, String content, String writer, String createdDate, String modifiedDate) {
-        super(createdDate, modifiedDate);
+    @Getter
+    @AllArgsConstructor
+    public static class Response extends BaseTimeResponseDto {
+        private final Long id;
+        private final String content;
+        private final String writer;
 
-        this.id = id;
-        this.content = content;
-        this.writer = writer;
-    }
+        private Response(Comment comment) {
+            super(comment); // set BaseTimeDto
 
-    public static CommentDto from(Comment comment) {
-        return new CommentDto(comment);
+            this.id = comment.getId();
+            this.content = comment.getContent();
+            this.writer = comment.getMemberName();
+        }
+
+        public static Response from(Comment comment) {
+            return new Response(comment);
+        }
     }
 }

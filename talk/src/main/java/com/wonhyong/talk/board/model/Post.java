@@ -17,7 +17,6 @@ import java.util.Set;
 @AllArgsConstructor
 public class Post extends BaseTimeModel {
 
-    //TODO title and content empty check
     @Column(length = 50, nullable = false)
     private String title;
 
@@ -46,10 +45,7 @@ public class Post extends BaseTimeModel {
         this.member = member;
     }
 
-    public void update(String title, String content) throws IllegalArgumentException {
-        if (title == null || title.isEmpty() || content == null || content.isEmpty()) {
-            throw new IllegalArgumentException("Require NOT EMPTY Title and Content");
-        }
+    public void update(String title, String content) {
         this.title = title;
         this.content = content;
     }
@@ -63,12 +59,18 @@ public class Post extends BaseTimeModel {
         return likes.size();
     }
 
-    public boolean isAlreadyLiked(Member user) {
-        return likes.stream()
-                .anyMatch(like -> like.getMember().getName().equals(user.getName()));
+    // if post is liked by viewer, return like * -1
+    public int getLikeNum(Member user) {
+        if (isAlreadyLiked(user)) return getLikeNum() * -1;
+        return getLikeNum();
     }
 
     public int getCommentNum() {
         return comments.size();
+    }
+
+    public boolean isAlreadyLiked(Member user) {
+        return likes.stream().noneMatch(like ->
+                        like.getMember().getName().equals(user.getName()));
     }
 }

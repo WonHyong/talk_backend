@@ -1,53 +1,83 @@
 package com.wonhyong.talk.board.dto;
 
-import com.wonhyong.talk.base.dto.BaseTimeDto;
+import com.wonhyong.talk.base.dto.BaseTimeResponseDto;
 import com.wonhyong.talk.board.model.Post;
-import com.wonhyong.talk.member.domain.Member;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
-@Getter
-public class PostDto extends BaseTimeDto {
+import javax.validation.constraints.NotBlank;
 
-    private final Long id;
-    private final String title;
-    private final String content;
-    private final String writer;
-    private final int like; //  음수면 현재 보고 있는 사용자가 이미 좋아요 한거임
-    private final int view;
-    private final int numComment;
 
-    private PostDto(Post post, Member user) {
-        super(post);    // set BaseTimeDto
+public class PostDto {
 
-        this.id = post.getId();
-        this.title = post.getTitle();
-        this.content = post.getContent();
-        this.writer = post.getMemberName();
-        this.view = post.getView();
-        this.numComment = post.getCommentNum();
+    @Getter
+    @RequiredArgsConstructor
+    public static class Request {
 
-        // 현재 사용자 좋아요 여부
-        int likeNum = post.getLikeNum();
-        if (post.isAlreadyLiked(user)) {
-            likeNum *= -1;
+        @NotBlank(message = "게시글 제목이 필요합니다.")
+        private final String title;
+
+        private final String content;
+    }
+
+    @Getter
+    @AllArgsConstructor
+    public static class DetailResponse extends BaseTimeResponseDto {
+        private Long id;
+        private String title;
+        private String content;
+        private String writer;
+        private int like;
+        private int view;
+        private int numComment;
+
+        private DetailResponse(Post post, int like, int numComment) {
+            super(post);
+            this.id = post.getId();
+            this.title = post.getTitle();
+            this.content = post.getContent();
+            this.writer = post.getMemberName();
+            this.like = like;
+            this.view = post.getView();
+            this.numComment = numComment;
         }
 
-        this.like = likeNum;
+        public static DetailResponse from(Post post) {
+            return new DetailResponse(post, post.getLikeNum(), post.getCommentNum());
+        }
+
+        public static DetailResponse from(Post post, int like, int numComment) {
+            return new DetailResponse(post, like, numComment);
+        }
     }
 
-    private PostDto(Long id, String title, String content, String writer, int view, int like, int numComment, String createdDate, String modifiedDate) {
-        super(createdDate, modifiedDate);    // set BaseTimeDto
+    @Getter
+    @AllArgsConstructor
+    public static class ListResponse extends BaseTimeResponseDto {
+        private Long id;
+        private String title;
+        private String writer;
+        private int like;
+        private int view;
+        private int numComment;
 
-        this.id = id;
-        this.title = title;
-        this.content = content;
-        this.like = like;
-        this.writer = writer;
-        this.view = view;
-        this.numComment = numComment;
-    }
+        private ListResponse(Post post, int like, int numComment) {
+            super(post);
+            this.id = post.getId();
+            this.title = post.getTitle();
+            this.writer = post.getMemberName();
+            this.like = like;
+            this.view = post.getView();
+            this.numComment = numComment;
+        }
 
-    public static PostDto from(Post post, Member user) {
-        return new PostDto(post, user);
+        public static ListResponse from(Post post) {
+            return new ListResponse(post, post.getLikeNum(), post.getCommentNum());
+        }
+
+        public static ListResponse from(Post post, int like, int numComment) {
+            return new ListResponse(post, like, numComment);
+        }
     }
 }
