@@ -37,3 +37,24 @@ jobs:
     # MAVEN
     - name: Build with Maven
       run: mvn -B package --file talk/pom.xml
+
+    # Docker
+    - name: Docker build & push to hub
+      run: |
+          docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{secrets.DOCKER_PASSWORD}}
+          docker build -f talk/Dockerfile -t ${{ secrets.DOCKER_REPO }}/lotalk .
+          docker push ${{ secrets.DOCKER_REPO }}/lotalk
+
+    ## Deploy
+    - name: Deploy to ec2
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.HOST }}
+        username: ${{ secrets.USERNAME }}
+        port: 22
+        key: ${{ secrets.PRIVATE_KEY }}
+        script: |
+            sudo docker rm -f $(docker ps -qa)
+            sudo docker pull ${{ secrets.DOCKER_REPO }}/lotalk
+            docker-compose up -d
+            docker image prune -f
