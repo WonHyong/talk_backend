@@ -52,7 +52,7 @@ jobs:
           docker build -t ${{ secrets.DOCKER_REPO }}/lotalk .
           docker push ${{ secrets.DOCKER_REPO }}/lotalk
 
-    ## Deploy
+    # Deploy
     - name: Deploy to ec2
       uses: appleboy/ssh-action@master
       with:
