@@ -1,4 +1,5 @@
 FROM maven:3.8.5-openjdk-17
+WORKDIR talk_backend/talk
 COPY . .
 RUN mvn clean install
 
