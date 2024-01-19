@@ -29,7 +29,6 @@ services:
               '--collation-server=utf8mb4_unicode_ci']
   app:
     image: ${DOCKER_REPO}/lotalk:latest
-    container_name: lotalk
     restart: on-failure
     depends_on:
       - mysql
