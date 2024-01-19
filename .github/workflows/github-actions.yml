@@ -34,6 +34,14 @@ jobs:
         key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
         restore-keys: ${{ runner.os }}-m2
 
+    # Appication.yml
+    - name: Make application.yml
+      run: |
+        cd ./talk/src/main/resources
+        touch ./application.yml
+        echo "${{ secrets.APPLICATION_YML }}" > ./application.yml
+      shell: bash
+      
     # MAVEN
     - name: Build with Maven
       run: mvn -B package --file talk/pom.xml
@@ -41,8 +49,9 @@ jobs:
     # Docker
     - name: Docker build & push to hub
       run: |
+          cd ./talk
           docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{secrets.DOCKER_PASSWORD}}
-          docker build -f talk/Dockerfile -t ${{ secrets.DOCKER_REPO }}/lotalk .
+          docker build -t ${{ secrets.DOCKER_REPO }}/lotalk .
           docker push ${{ secrets.DOCKER_REPO }}/lotalk
 
     ## Deploy
