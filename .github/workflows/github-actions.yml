@@ -54,7 +54,7 @@ jobs:
         port: 22
         key: ${{ secrets.PRIVATE_KEY }}
         script: |
-            sudo docker rm -f $(docker ps -qa)
+            sudo docker container prune -f
             sudo docker pull ${{ secrets.DOCKER_REPO }}/lotalk
             docker-compose up -d
             docker image prune -f
