@@ -51,7 +51,6 @@ public class Post extends BaseTimeModel {
     }
 
     public String getMemberName() {
-        if (member == null) return "NONE";
         return member.getName();
     }
 
