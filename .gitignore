@@ -8,6 +8,10 @@
 # User-specific stuff
 .idea/
 
+# setting values
+.env
+talk/src/main/resources/application.yml
+
 .m2
 
 # AWS User-specific
