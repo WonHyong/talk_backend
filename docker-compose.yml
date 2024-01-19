@@ -9,6 +9,8 @@ services:
     env_file: ./.env
     ports:
       - ${REDIS_LOCAL_PORT}:${REDIS_DOCKER_PORT}
+    volumes:
+      - redisdb:/var/lib/redis
     command: redis-server --requirepass ${REDIS_PASSWORD} --port ${REDIS_DOCKER_PORT}
 
   mysqldb:
@@ -20,6 +22,8 @@ services:
       - MYSQL_DATABASE=${MYSQLDB_DATABASE}
     ports:
       - ${MYSQLDB_LOCAL_PORT}:${MYSQLDB_DOCKER_PORT}
+    volumes:
+      - mysqldb:/var/lib/mysql
     command: ['mysqld',
               '--character-set-server=utf8mb4',
               '--collation-server=utf8mb4_unicode_ci']
@@ -45,3 +49,7 @@ services:
       - .m2:/root/.m2
     stdin_open: true
     tty: true
+
+volumes:
+  redisdb:
+  mysqldb:
