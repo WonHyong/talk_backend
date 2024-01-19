@@ -4,8 +4,6 @@ name: CI/CD
 on:
   push:
     branches: [ main ]
-  pull_request:
-    branches: [ main ]
 
 permissions:
   contents: read
@@ -65,5 +63,6 @@ jobs:
         script: |
             sudo docker container prune -f
             sudo docker pull ${{ secrets.DOCKER_REPO }}/lotalk
+            curl -L -O https://raw.githubusercontent.com/WonHyong/talk_backend/main/docker-compose.yml
             docker-compose up -d
             docker image prune -f
