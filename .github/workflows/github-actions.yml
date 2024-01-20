@@ -62,7 +62,7 @@ jobs:
       if: github.event_name == 'push'
       uses: docker/build-push-action@v5
       with:
-        context: ./talk
+        file: ./talk/Dockerfile
         push: true
         tags: ${{ secrets.DOCKER_REPO }}/lotalk:latest
         cache-from: type=gha
