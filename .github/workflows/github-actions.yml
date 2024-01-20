@@ -82,6 +82,5 @@ jobs:
             # docker-compose.yml
             curl -L -O https://raw.githubusercontent.com/WonHyong/talk_backend/main/docker-compose.yml
             
-            docker-compose up -d --build > docker-compose_up.out
+            docker-compose up -d --build --exit-code-from app
             docker image prune -f
-            cat docker-compose_up.out
