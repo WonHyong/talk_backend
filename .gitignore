@@ -10,7 +10,6 @@
 
 # setting values
 .env
-talk/src/main/resources/application.yml
 
 .m2
 

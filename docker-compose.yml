@@ -13,7 +13,7 @@ services:
       - redisdb:/var/lib/redis
     command: redis-server --requirepass ${REDIS_PASSWORD} --port ${REDIS_DOCKER_PORT}
 
-  mysql:
+  mysqldb:
     image: mysql:5.7
     container_name: mysqldb
     hostname: mysqldb
@@ -41,7 +41,7 @@ services:
     environment:
       - TZ=Asia/Seoul
     volumes:
-      - /home/ec2-user/log:/var/log
+      - /home/ec2-user/log:${LOG_BASE_DIR}
     stdin_open: true
     tty: true
 
