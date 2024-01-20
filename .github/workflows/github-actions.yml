@@ -35,8 +35,9 @@ jobs:
     # Source Enviornment variables
     - name: Set Environment variables
       run: |
-        echo ${{ secrets.ENVIRONMENT_VARS }} >> .env
+        echo "${{ secrets.ENVIRONMENT_VARS }}" >> .env
         export $(grep -v '^#' .env | xargs -d '\n')
+      shell: bash
     
     # Appication.yml
     #- name: Make application.yml
@@ -70,7 +71,7 @@ jobs:
             sudo docker container prune -f
             sudo docker pull ${{ secrets.DOCKER_REPO }}/lotalk
             sudo rm .env
-            echo ${{ secrets.ENVIRONMENT_VARS }} >> .env
+            echo "${{ secrets.ENVIRONMENT_VARS }}" >> .env
             export $(grep -v '^#' .env | xargs -d '\n')
             curl -L -O https://raw.githubusercontent.com/WonHyong/talk_backend/main/docker-compose.yml
             docker-compose up -d
