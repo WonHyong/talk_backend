@@ -28,7 +28,7 @@ jobs:
 
     # Caching dependencies
     - name: Cache Maven packages
-      uses: actions/cache@v2
+      uses: actions/cache@v3
       with:
         path: ~/.m2
         key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
@@ -74,10 +74,14 @@ jobs:
         script: |
             sudo docker container prune -f
             sudo docker pull ${{ secrets.DOCKER_REPO }}/lotalk
-            sudo rm .env
-            echo "${{ secrets.ENVIRONMENT_VARS }}" >> .env
+
+            # Enviornment varialbes
+            echo "${{ secrets.ENVIRONMENT_VARS }}" >| .env
             export $(grep -v '^#' .env | xargs -d '\n')
+
+            # docker-compose.yml
             curl -L -O https://raw.githubusercontent.com/WonHyong/talk_backend/main/docker-compose.yml
+            
             docker-compose up -d --build > docker-compose_up.out
             docker image prune -f
             cat docker-compose_up.out
