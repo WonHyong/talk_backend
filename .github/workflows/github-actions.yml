@@ -4,6 +4,8 @@ name: CI/CD
 on:
   push:
     branches: [ main ]
+  pull_request:
+    branches: [ main ]
 
 permissions:
   contents: read
@@ -53,6 +55,7 @@ jobs:
 
     # Docker
     - name: Docker build & push to hub
+      if: github.event_name == 'push'
       run: |
           cd ./talk
           docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{secrets.DOCKER_PASSWORD}}
@@ -61,6 +64,7 @@ jobs:
 
     # Deploy
     - name: Deploy to ec2
+      if: github.event_name == 'push'
       uses: appleboy/ssh-action@master
       with:
         host: ${{ secrets.HOST }}
