@@ -19,6 +19,11 @@ public class PostController {
 
     private final PostService postService;
 
+    @GetMapping("/hello")
+    public String hello() {
+        return "HELLO";
+    }
+
     @GetMapping
     public Iterable<PostDto.ListResponse> getPosts(Pageable pageable,
                                                    @AuthenticationPrincipal MemberDetails member) {
