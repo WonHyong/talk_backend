@@ -33,7 +33,7 @@ services:
     image: ${DOCKER_REPO}/lotalk:latest
     restart: on-failure
     depends_on:
-      - mysql
+      - mysqldb
       - redis
     env_file: ./.env
     ports:
