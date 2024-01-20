@@ -21,7 +21,7 @@ public class PostController {
 
     @GetMapping("/hello/hello")
     public String hello() {
-        return "HELLO";
+        return "HELLO2";
     }
 
     @GetMapping
