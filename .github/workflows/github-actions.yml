@@ -80,4 +80,4 @@ jobs:
             curl -L -O https://raw.githubusercontent.com/WonHyong/talk_backend/main/docker-compose.yml
             docker-compose up -d --build > log/docker-compose_up.log
             docker image prune -f
-            cat log.out
+            cat log/docker-compose_up.log
