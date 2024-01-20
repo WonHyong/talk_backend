@@ -35,7 +35,7 @@ jobs:
     # Source Enviornment variables
     - name: Set Environment variables
       run: |
-        echo ${{ secretx.ENVIRONMENT_VARS }} >> .env
+        echo ${{ secrets.ENVIRONMENT_VARS }} >> .env
         export $(grep -v '^#' .env | xargs -d '\n')
     
     # Appication.yml
