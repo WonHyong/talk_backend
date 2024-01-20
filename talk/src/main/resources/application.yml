@@ -24,7 +24,7 @@ server:
       enabled: true
       file-date-format: yy-MM-dd
       pattern: '%{yyyy-MM-dd HH:mm:ss}t %s %r %{User-Agent}i %{Referer}i %a %b %D'
-      directory: talk/access_log
+      directory: access_log
       suffix: .log
       prefix: access_log_
     basedir: ${LOG_BASE_DIR}
