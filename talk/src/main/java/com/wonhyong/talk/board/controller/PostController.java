@@ -19,7 +19,7 @@ public class PostController {
 
     private final PostService postService;
 
-    @GetMapping("/hello")
+    @GetMapping("/hello/hello")
     public String hello() {
         return "HELLO";
     }
