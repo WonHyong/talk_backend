@@ -82,5 +82,12 @@ jobs:
             # docker-compose.yml
             curl -L -O https://raw.githubusercontent.com/WonHyong/talk_backend/main/docker-compose.yml
             
-            docker-compose up -d --build --exit-code-from app
+            docker-compose up -d --build
             docker image prune -f
+
+            ERROR_COUNT=$(docker-compose logs | grep -c ERROR)
+
+            if [ $ERROR_COUNT -gt 0 ]; then
+              echo "Found $ERROR_COUNT error(s) in container logs."
+              exit 1
+            fi
