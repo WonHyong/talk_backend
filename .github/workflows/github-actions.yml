@@ -78,6 +78,6 @@ jobs:
             echo "${{ secrets.ENVIRONMENT_VARS }}" >> .env
             export $(grep -v '^#' .env | xargs -d '\n')
             curl -L -O https://raw.githubusercontent.com/WonHyong/talk_backend/main/docker-compose.yml
-            docker-compose up -d --build > log/docker-compose_up.log
+            docker-compose up -d --build > docker-compose_up.out
             docker image prune -f
-            cat log/docker-compose_up.log
+            cat docker-compose_up.out
