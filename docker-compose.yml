@@ -41,7 +41,7 @@ services:
     environment:
       - TZ=Asia/Seoul
     volumes:
-      - /home/ec2-user/log:${LOG_BASE_DIR}
+      - /home/ec2-user/log:${BASE_DIR}
     stdin_open: true
     tty: true
 
