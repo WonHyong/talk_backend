@@ -4,7 +4,6 @@ import com.wonhyong.talk.board.dto.PostDto;
 import com.wonhyong.talk.board.service.PostService;
 import com.wonhyong.talk.member.domain.MemberDetails;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -12,7 +11,6 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 
 
-@Slf4j
 @CrossOrigin
 @RestController
 @RequestMapping("/api/boards")
@@ -20,12 +18,6 @@ import javax.validation.Valid;
 public class PostController {
 
     private final PostService postService;
-
-    @GetMapping("/hello/hello")
-    public String hello() {
-        log.info("HELLO LOG");
-        return "HELLO2";
-    }
 
     @GetMapping
     public Iterable<PostDto.ListResponse> getPosts(Pageable pageable,
