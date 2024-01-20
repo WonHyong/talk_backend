@@ -78,6 +78,6 @@ jobs:
             sudo rm .env
             echo "${{ secrets.ENVIRONMENT_VARS }}" >> .env
             curl -L -O https://raw.githubusercontent.com/WonHyong/talk_backend/main/docker-compose.yml
-            docker-compose up -d --build --quiet-pull 2>log.out
+            docker-compose up -d --build >log.out
             docker image prune -f
             cat log.out
