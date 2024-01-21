@@ -18,21 +18,13 @@ spring:
       host: ${REDIS_HOST}
 
 
-server:
-  tomcat:
-    accesslog:
-      enabled: true
-      file-date-format: yy-MM-dd
-      pattern: '%{yyyy-MM-dd HH:mm:ss}t %s %r %{User-Agent}i %{Referer}i %a %b %D'
-      directory: log/access_log
-      suffix: .log
-      prefix: access_log_
-    basedir: ${BASE_DIR}
-
+logback:
+  access:
+    enabled: true
+    config: classpath:logback-access.xml
 
 logging:
   config: classpath:logback-dev.xml
-
 
 jwt:
   secret:
