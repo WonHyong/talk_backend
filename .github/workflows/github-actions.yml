@@ -17,7 +17,7 @@ jobs:
 
     # Check out
     - name: Checkout
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
     # JDK 11
     - name: Set up JDK 11
@@ -28,11 +28,32 @@ jobs:
 
     # Caching dependencies
     - name: Cache Maven packages
-      uses: actions/cache@v2
+      uses: actions/cache@v3
       with:
         path: ~/.m2
         key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
         restore-keys: ${{ runner.os }}-m2
+
+    - name: Cache var-cache-apt
+      uses: actions/cache@v3
+      with:
+        path: var-cache-apt
+        key: var-cache-apt-${{ hashFiles('**/Dockerfile') }}
+    - name: Cache var-lib-apt
+      uses: actions/cache@v3
+      with:
+        path: var-lib-apt
+        key: var-lib-apt-${{ hashFiles('**/Dockerfile') }}
+    - name: inject var-cache-apt into docker
+      uses: reproducible-containers/buildkit-cache-dance@v2.1.3
+      with:
+        cache-source: var-cache-apt
+        cache-target: /var/cache/apt
+    - name: inject var-lib-apt into docker
+      uses: reproducible-containers/buildkit-cache-dance@v2.1.3
+      with:
+        cache-source: var-lib-apt
+        cache-target: /var/lib/apt
 
     # Source Enviornment variables
     - name: Set Environment variables
@@ -40,27 +61,33 @@ jobs:
         echo "${{ secrets.ENVIRONMENT_VARS }}" >> .env
         export $(grep -v '^#' .env | xargs -d '\n')
       shell: bash
-    
-    # Appication.yml
-    #- name: Make application.yml
-    #  run: |
-    #   cd ./talk/src/main/resources
-    #   touch ./application.yml
-    #   echo "${{ secrets.APPLICATION_YML }}" > ./application.yml
-    #  shell: bash
       
     # MAVEN
     - name: Build with Maven
       run: mvn -B package --file talk/pom.xml
 
+    
     # Docker
+    - name: Set up Docker Buildx
+      if: github.event_name == 'push'
+      uses: docker/setup-buildx-action@v3
+
+    - name: Login to DockerHub
+      if: github.event_name == 'push'
+      uses: docker/login-action@v3
+      with:
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{secrets.DOCKER_PASSWORD}}
+
     - name: Docker build & push to hub
       if: github.event_name == 'push'
-      run: |
-          cd ./talk
-          docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{secrets.DOCKER_PASSWORD}}
-          docker build -t ${{ secrets.DOCKER_REPO }}/lotalk .
-          docker push ${{ secrets.DOCKER_REPO }}/lotalk
+      uses: docker/build-push-action@v5
+      with:
+        context: ./talk
+        push: true
+        tags: ${{ secrets.DOCKER_REPO }}/lotalk:latest
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
 
     # Deploy
     - name: Deploy to ec2
@@ -74,10 +101,20 @@ jobs:
         script: |
             sudo docker container prune -f
             sudo docker pull ${{ secrets.DOCKER_REPO }}/lotalk
-            sudo rm .env
-            echo "${{ secrets.ENVIRONMENT_VARS }}" >> .env
+
+            # Enviornment varialbes
+            echo "${{ secrets.ENVIRONMENT_VARS }}" >| .env
             export $(grep -v '^#' .env | xargs -d '\n')
+
+            # docker-compose.yml
             curl -L -O https://raw.githubusercontent.com/WonHyong/talk_backend/main/docker-compose.yml
-            docker-compose up -d --build > docker-compose_up.out
+            
+            docker-compose up -d --build
             docker image prune -f
-            cat docker-compose_up.out
+
+            ERROR_COUNT=$(docker-compose logs | grep -c ERROR)
+
+            if [ $ERROR_COUNT -gt 0 ]; then
+              echo "Found $ERROR_COUNT error(s) in container logs."
+              exit 1
+            fi

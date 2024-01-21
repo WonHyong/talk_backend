@@ -1,7 +1,3 @@
-## Set up
-make ./.env and src/resources/application.yml
-
-
 ## Run
 ```bash
 docker-compose up
