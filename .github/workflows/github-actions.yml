@@ -118,3 +118,9 @@ jobs:
               echo "Found $ERROR_COUNT error(s) in container logs."
               exit 1
             fi
+
+    # Discord Noti
+    - name: Discord notification
+      uses: sarisia/actions-status-discord@v1
+      with:
+        webhook: ${{ secrets.DISCORD_WEBHOOK }}
