@@ -19,6 +19,14 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v4
 
+    # Discord Notification
+    - name: Discord Notification - start
+      env:
+        DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+      uses: Ilshidur/action-discord@master
+      with:
+        args: '{{ EVENT_PAYLOAD.repository.full_name }} start CI/CD'
+
     # JDK 17
     - name: Set up JDK 17
       uses: actions/setup-java@v3
