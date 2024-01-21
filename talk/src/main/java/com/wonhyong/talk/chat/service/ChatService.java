@@ -7,13 +7,13 @@ import com.wonhyong.talk.chat.entity.ChatMessageEntity;
 import com.wonhyong.talk.chat.entity.ChatRoomEntity;
 import com.wonhyong.talk.chat.repository.ChatMessageRepository;
 import com.wonhyong.talk.chat.repository.ChatRoomRepository;
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 
-import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -90,10 +90,6 @@ public class ChatService {
             }
         });
         toRemoveSessions.forEach(room::removeSession);
-    }
-
-    public void sendErrorMessage(WebSocketSession session, String message) {
-        sendMessage(session, message);
     }
 
     private <T> void sendMessage(WebSocketSession session, T message) {

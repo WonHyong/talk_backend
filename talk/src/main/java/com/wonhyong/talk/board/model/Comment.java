@@ -2,12 +2,11 @@ package com.wonhyong.talk.board.model;
 
 import com.wonhyong.talk.base.model.BaseTimeModel;
 import com.wonhyong.talk.member.domain.Member;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import javax.persistence.*;
 
 @Table(name = "comments")
 @Entity

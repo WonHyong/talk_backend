@@ -102,7 +102,7 @@ public class MemberService{
 
         MemberDetails memberDetails = (MemberDetails) memberDetailsService.loadUserByUsername(member.getName());
 
-        final String accessToken = jwtProvider.createToken(memberDetails);
+        final String accessToken = jwtProvider.generateAccessToken(memberDetails);
         final String refreshTokenValue = jwtProvider.generateRefreshToken(memberDetails);
 
         redisService.saveRefreshToken(memberDetails.getUsername(), refreshTokenValue);
@@ -121,7 +121,7 @@ public class MemberService{
             String tokenUserName = jwtProvider.getUserPk(refreshTokenValue);
             String refreshToken = redisService.getRefreshToken(userName);
 
-            final String accessToken = jwtProvider.createToken((MemberDetails) memberDetailsService.loadUserByUsername(tokenUserName));
+            final String accessToken = jwtProvider.generateAccessToken((MemberDetails) memberDetailsService.loadUserByUsername(tokenUserName));
 
             if (userName.equals(tokenUserName) && refreshToken.equals(refreshTokenValue)) {
                 return MemberResponseDto.builder()

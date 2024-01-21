@@ -2,11 +2,10 @@ package com.wonhyong.talk.board.dto;
 
 import com.wonhyong.talk.base.dto.BaseTimeResponseDto;
 import com.wonhyong.talk.board.model.Comment;
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-
-import javax.validation.constraints.NotBlank;
 
 public class CommentDto {
 

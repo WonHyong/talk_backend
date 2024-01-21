@@ -3,9 +3,9 @@ package com.wonhyong.talk.member.domain;
 import com.wonhyong.talk.board.model.Comment;
 import com.wonhyong.talk.board.model.Like;
 import com.wonhyong.talk.board.model.Post;
+import jakarta.persistence.*;
 import lombok.*;
 
-import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 

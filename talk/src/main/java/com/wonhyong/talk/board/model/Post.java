@@ -2,9 +2,9 @@ package com.wonhyong.talk.board.model;
 
 import com.wonhyong.talk.base.model.BaseTimeModel;
 import com.wonhyong.talk.member.domain.Member;
+import jakarta.persistence.*;
 import lombok.*;
 
-import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;

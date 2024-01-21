@@ -1,13 +1,12 @@
 package com.wonhyong.talk.member.jwt;
 
 import com.wonhyong.talk.member.domain.MemberDetails;
-import com.wonhyong.talk.member.domain.Role;
 import com.wonhyong.talk.member.service.MemberDetailsService;
 import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
+import jakarta.annotation.PostConstruct;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -15,8 +14,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
-import javax.servlet.http.HttpServletRequest;
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Date;
@@ -30,15 +27,13 @@ public class JwtProvider {
     private String salt;
 
     @Value("${jwt.secret.token-expiration}")
-    private long tokenExpiration;
+    private long accessTokenExpiration;
 
     @Value("${jwt.secret.refresh-token-expiration}")
     private long refreshTokenExpiration;
 
 
     private Key secretKey;
-
-    private final long exp = 1000L * 60 * 60;
 
     private final MemberDetailsService memberDetailsService;
 
@@ -47,37 +42,13 @@ public class JwtProvider {
         secretKey = Keys.hmacShaKeyFor(salt.getBytes(StandardCharsets.UTF_8));
     }
 
-    public String createToken(MemberDetails member) {
-        Claims claims = Jwts.claims().setSubject(member.getUsername()); // JWT payload 에 저장되는 정보단위
-        claims.put("role", member.getRole().toString());
-        claims.put("id", String.valueOf(member.getId()));
-        Date now = new Date();
-        return Jwts.builder()
-                .setClaims(claims) // 정보 저장
-                .setIssuedAt(now) // 토큰 발행 시간 정보
-                .setExpiration(new Date(now.getTime() + tokenExpiration)) // set Expire Time
-                .signWith(SignatureAlgorithm.HS256, secretKey)  // 사용할 암호화 알고리즘과
-                // signature 에 들어갈 secret값 세팅
-                .compact();
+    public String generateAccessToken(MemberDetails member) {
+        return generateToken(member, accessTokenExpiration);
     }
 
     public String generateRefreshToken(MemberDetails member) {
-
-        Claims claims = Jwts.claims().setSubject(member.getUsername()); // JWT payload 에 저장되는 정보단위
-        claims.put("role", member.getRole().toString());
-        claims.put("id", String.valueOf(member.getId()));
-        Date now = new Date();
-
-
-        return Jwts.builder()
-                .setClaims(claims)
-                .setIssuedAt(now)
-                .setExpiration(new Date(now.getTime() + refreshTokenExpiration))
-                .signWith(SignatureAlgorithm.HS512, secretKey)
-                .compact();
+        return generateToken(member, refreshTokenExpiration);
     }
-
-
 
     public Date extractExpiration(String token) {
         return extractClaim(token, Claims::getExpiration);
@@ -92,17 +63,13 @@ public class JwtProvider {
         return claimsResolver.apply(claims);
     }
 
-    private Claims extractAllClaims(String token) {
-        return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody();
-    }
-
     public Authentication getAuthentication(String token) {
         UserDetails userDetails = memberDetailsService.loadUserByUsername(this.getUserPk(token));
         return new UsernamePasswordAuthenticationToken(userDetails, token, userDetails.getAuthorities());
     }
 
     public String getUserPk(String token) {
-        return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().getSubject();
+        return extractAllClaims(token).getSubject();
     }
 
     public String resolveToken(HttpServletRequest request) {
@@ -111,12 +78,30 @@ public class JwtProvider {
 
     // 토큰의 유효성 + 만료일자 확인
     public boolean validateToken(String jwtToken) {
-        try {
-            Jws<Claims> claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(jwtToken);
-            return !claims.getBody().getExpiration().before(new Date());
-        } catch (Exception e) {
-            return false;
-        }
+        Claims claims = extractAllClaims(jwtToken);
+        return !claims.getExpiration().before(new Date());
+    }
+
+    private String generateToken(MemberDetails member, long expiration) {
+        Claims claims = Jwts.claims().setSubject(member.getUsername()); // JWT payload 에 저장되는 정보단위
+        claims.put("role", member.getRole().toString());
+        claims.put("id", String.valueOf(member.getId()));
+        Date now = new Date();
+
+        return Jwts.builder()
+                .setClaims(claims)
+                .setIssuedAt(now)
+                .setExpiration(new Date(now.getTime() + expiration))
+                .signWith(secretKey)
+                .compact();
+    }
+
+    private Claims extractAllClaims(String token) {
+        return Jwts.parserBuilder()
+                .setSigningKey(secretKey)
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
     }
 
 }

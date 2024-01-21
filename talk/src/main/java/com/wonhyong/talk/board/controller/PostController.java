@@ -3,12 +3,11 @@ package com.wonhyong.talk.board.controller;
 import com.wonhyong.talk.board.dto.PostDto;
 import com.wonhyong.talk.board.service.PostService;
 import com.wonhyong.talk.member.domain.MemberDetails;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-
-import javax.validation.Valid;
 
 
 @CrossOrigin

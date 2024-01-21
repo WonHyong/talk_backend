@@ -1,11 +1,10 @@
 package com.wonhyong.talk.chat.entity;
 
 import com.wonhyong.talk.chat.dto.ChatMessage;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
-
-import javax.persistence.*;
 
 @Entity
 @Table(name = "messages")
