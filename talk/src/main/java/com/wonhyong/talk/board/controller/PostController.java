@@ -28,9 +28,8 @@ public class PostController {
     @GetMapping("/{id}")
     public PostDto.DetailResponse getPostById(@PathVariable Long id,
                                               @AuthenticationPrincipal MemberDetails member) {
-        PostDto.DetailResponse res = postService.findById(member, id);
         postService.increaseView(id);
-        return res;
+        return postService.findById(member, id);
     }
 
     @PostMapping
