@@ -71,7 +71,7 @@ public class TestDataLoader {
             Post post = Post.builder()
                     .title("Title " + i)
                     .content("Content " + i)
-                    .member(writer)
+                    .writer(writer)
                     .build();
 
             sampleBoards.add(post);
@@ -90,7 +90,7 @@ public class TestDataLoader {
                 Comment comment = Comment.builder()
                         .content("comment " + i)
                         .post(target)
-                        .member(writer)
+                        .writer(writer)
                         .build();
 
                 sampleComments.add(comment);

@@ -57,7 +57,7 @@ public class MemberService{
                 new UsernameNotFoundException("NO USER FOR " + name));
 
         return user.getLikes().stream()
-                .map(Like::getLikeTo)
+                .map(Like::getPost)
                 .map(PostDto.ListResponse::from)
                 .collect(Collectors.toList());
     }

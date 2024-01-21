@@ -19,26 +19,28 @@ import java.util.stream.Collectors;
 public class CommentService {
 
     private final CommentRepository commentRepository;
-    private final PostService postService;
 
     @Transactional(readOnly = true)
     public Iterable<CommentDto.Response> findAllCommentsInPost(@NonNull Long postId) {
-        Post post = postService.findPostById(postId);
-
-        return post.getComments().stream()
+        return commentRepository.findAllByPost_Id(postId).stream()
                 .map(CommentDto.Response::from)
                 .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
+    public boolean isExistById(@NonNull Long id) {
+        return commentRepository.existsById(id);
+    }
+
     @Transactional
     public CommentDto.Response create(Long postId, MemberDetails member, CommentDto.Request commentDto) {
-        Post post = postService.findPostById(postId);
-        Member currentUser = postService.findUser(member);
+        Post post = new Post(postId);
+        Member currentUser = member.getMember();
 
         Comment comment = Comment.builder()
                 .content(commentDto.getContent())
                 .post(post)
-                .member(currentUser)
+                .writer(currentUser)
                 .build();
 
         commentRepository.save(comment);
@@ -51,8 +53,11 @@ public class CommentService {
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new NoSuchElementException("No Comment For: " + commentId));
 
-        Member currentUser = postService.findUser(member);
-        postService.checkIsWriter(currentUser, member.getMember());
+        Member currentUser = member.getMember();
+
+        if (!comment.getWriter().equals(currentUser)) {
+            throw new IllegalAccessException("No Permission");
+        }
 
         comment.update(commentRequestDto.getContent());
         commentRepository.save(comment);
@@ -61,9 +66,16 @@ public class CommentService {
     }
 
     @Transactional
-    public void delete(Long commentId) {
-        commentRepository.findById(commentId).orElseThrow(() ->
-                new NoSuchElementException("No Comment For: " + commentId));
+    public void delete(Long commentId, MemberDetails member) throws IllegalAccessException {
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(() -> new NoSuchElementException("No Comment For: " + commentId));
+
+        Member currentUser = member.getMember();
+
+        if (!comment.getWriter().equals(currentUser)) {
+            throw new IllegalAccessException("No Permission");
+        }
+
         commentRepository.deleteById(commentId);
     }
 }

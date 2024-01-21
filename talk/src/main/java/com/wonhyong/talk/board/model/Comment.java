@@ -16,6 +16,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class Comment extends BaseTimeModel {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Long id;
+
     @Column
     private String content;
 
@@ -23,16 +27,11 @@ public class Comment extends BaseTimeModel {
     @JoinColumn(name = "post_id")
     private Post post;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "member_id")
-    private Member member;
+    private Member writer;
 
     public void update(String content) {
         this.content = content;
-    }
-
-    public String getMemberName() {
-        if (this.member == null) return "NONE";
-        return member.getName();
     }
 }

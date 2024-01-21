@@ -6,6 +6,8 @@ import com.wonhyong.talk.member.domain.MemberDetails;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,15 +21,16 @@ public class PostController {
     private final PostService postService;
 
     @GetMapping
-    public Iterable<PostDto.ListResponse> getPosts(Pageable pageable,
-                                                   @AuthenticationPrincipal MemberDetails member) {
-        return postService.getPage(member, pageable);
+    public Iterable<PostDto.ListResponse> getPosts(Pageable pageable) {
+        return postService.getPage(pageable);
     }
 
     @GetMapping("/{id}")
-    public PostDto.DetailResponse getPostById(@PathVariable("id") Long id,
+    public PostDto.DetailResponse getPostById(@PathVariable Long id,
                                               @AuthenticationPrincipal MemberDetails member) {
-        return postService.findById(member, id);
+        PostDto.DetailResponse res = postService.findById(member, id);
+        postService.increaseView(id);
+        return res;
     }
 
     @PostMapping
@@ -37,23 +40,24 @@ public class PostController {
     }
 
     @PutMapping("/{id}")
-    public PostDto.DetailResponse updatePost(@PathVariable("id") Long id,
-                              @Valid @RequestBody PostDto.Request postRequestDto,
-                              @AuthenticationPrincipal MemberDetails member) throws Exception {
+    public ResponseEntity<PostDto.DetailResponse> updatePost(@PathVariable Long id,
+                                                             @Valid @RequestBody PostDto.Request postRequestDto,
+                                                             @AuthenticationPrincipal MemberDetails member) throws Exception {
 
-        return postService.update(id, member, postRequestDto);
+        return (postService.isExistById(id)) ?
+                ResponseEntity.status(HttpStatus.CREATED).body(postService.create(member, postRequestDto))
+                : ResponseEntity.status(HttpStatus.OK).body(postService.update(id, member, postRequestDto));
     }
 
     @PostMapping("/{id}/like")
-    public boolean increaseLike(@PathVariable("id") Long id,
-                               @AuthenticationPrincipal MemberDetails member) {
+    public boolean increaseLike(@PathVariable Long id,
+                                @AuthenticationPrincipal MemberDetails member) {
         return postService.increaseLike(id, member);
     }
 
     @DeleteMapping("/{id}")
-    public String deletePost(@PathVariable("id") Long id,
-                             @AuthenticationPrincipal MemberDetails member) throws Exception {
+    public void deletePost(@PathVariable Long id,
+                           @AuthenticationPrincipal MemberDetails member) throws Exception {
         postService.delete(id, member);
-        return "Post(" + id + ") deleted";
     }
 }
