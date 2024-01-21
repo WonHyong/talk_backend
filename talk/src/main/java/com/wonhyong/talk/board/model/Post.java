@@ -6,9 +6,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 @Table(name = "posts")
 @Entity
@@ -17,6 +15,10 @@ import java.util.Set;
 @AllArgsConstructor
 public class Post extends BaseTimeModel {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Long id;
+
     @Column(length = 50, nullable = false)
     private String title;
 
@@ -24,52 +26,32 @@ public class Post extends BaseTimeModel {
     private String content;
 
     @Setter
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "member_id")
-    private Member member;
+    private Member writer;
 
-    // todo: 개수만 필요함 -> 최적화 가능할듯?
-    @OneToMany(mappedBy = "post", fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "post", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private List<Comment> comments = new ArrayList<>();
 
-    @OneToMany(mappedBy = "likeTo", fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
-    private Set<Like> likes = new HashSet<>();
+    @OneToMany(mappedBy = "post", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    private List<Like> likes = new ArrayList<>();
 
     @Column(columnDefinition = "integer default 0", nullable = false)
     private int view;
 
     @Builder
-    public Post(String title, String content, Member member) {
+    public Post(String title, String content, Member writer) {
         this.title = title;
         this.content = content;
-        this.member = member;
+        this.writer = writer;
+    }
+
+    public Post(Long id) {
+        this.id = id;
     }
 
     public void update(String title, String content) {
         this.title = title;
         this.content = content;
-    }
-
-    public String getMemberName() {
-        return member.getName();
-    }
-
-    public int getLikeNum() {
-        return likes.size();
-    }
-
-    // if post is liked by viewer, return like * -1
-    public int getLikeNum(Member user) {
-        if (isAlreadyLiked(user)) return getLikeNum() * -1;
-        return getLikeNum();
-    }
-
-    public int getCommentNum() {
-        return comments.size();
-    }
-
-    public boolean isAlreadyLiked(Member user) {
-        return likes.stream().anyMatch(like ->
-                        like.getMember().getName().equals(user.getName()));
     }
 }

@@ -36,14 +36,10 @@ public class PostDto {
             this.id = post.getId();
             this.title = post.getTitle();
             this.content = post.getContent();
-            this.writer = post.getMemberName();
+            this.writer = post.getWriter().getName();
             this.like = like;
             this.view = post.getView();
             this.numComment = numComment;
-        }
-
-        public static DetailResponse from(Post post) {
-            return new DetailResponse(post, post.getLikeNum(), post.getCommentNum());
         }
 
         public static DetailResponse from(Post post, int like, int numComment) {
@@ -65,18 +61,18 @@ public class PostDto {
             super(post);
             this.id = post.getId();
             this.title = post.getTitle();
-            this.writer = post.getMemberName();
+            this.writer = post.getWriter().getName();
             this.like = like;
             this.view = post.getView();
             this.numComment = numComment;
         }
 
-        public static ListResponse from(Post post) {
-            return new ListResponse(post, post.getLikeNum(), post.getCommentNum());
-        }
-
         public static ListResponse from(Post post, int like, int numComment) {
             return new ListResponse(post, like, numComment);
+        }
+
+        public static ListResponse from(Post post) {
+            return new ListResponse(post, post.getLikes().size(), post.getComments().size());
         }
     }
 }

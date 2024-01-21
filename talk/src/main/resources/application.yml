@@ -5,17 +5,17 @@ spring:
     username: ${MYSQLDB_USER}
     password: ${MYSQLDB_ROOT_PASSWORD}
 
-  redis:
-    host: ${REDIS_HOST}
-    port: ${REDIS_LOCAL_PORT}
-    password: ${REDIS_PASSWORD}
-
   jpa:
     open-in-view: true
     hibernate.ddl-auto: create
     properties:
       hibernate.format_sql: true
       dialect: org.hibernate.dialect.MySQL8InnoDBDialect
+  data:
+    redis:
+      password: ${REDIS_PASSWORD}
+      port: ${REDIS_LOCAL_PORT}
+      host: ${REDIS_HOST}
 
 
 server:

@@ -28,7 +28,7 @@ public class CommentDto {
 
             this.id = comment.getId();
             this.content = comment.getContent();
-            this.writer = comment.getMemberName();
+            this.writer = comment.getWriter().getName();
         }
 
         public static Response from(Comment comment) {
