@@ -1,4 +1,4 @@
-package com.wonhyong.talk.member.jwt;
+package com.wonhyong.talk.Security.jwt;
 
 import com.wonhyong.talk.member.domain.MemberDetails;
 import com.wonhyong.talk.member.service.MemberDetailsService;

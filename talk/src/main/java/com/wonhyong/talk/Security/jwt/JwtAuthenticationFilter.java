@@ -1,4 +1,4 @@
-package com.wonhyong.talk.member.jwt;
+package com.wonhyong.talk.Security.jwt;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

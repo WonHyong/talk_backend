@@ -7,8 +7,8 @@ import com.wonhyong.talk.board.model.Like;
 import com.wonhyong.talk.member.domain.Member;
 import com.wonhyong.talk.member.domain.MemberDetails;
 import com.wonhyong.talk.member.dto.MemberRequestDto;
-import com.wonhyong.talk.member.dto.MemberResponseDto;
-import com.wonhyong.talk.member.jwt.JwtProvider;
+import com.wonhyong.talk.member.dto.TokenResponse;
+import com.wonhyong.talk.Security.jwt.JwtProvider;
 import com.wonhyong.talk.member.repository.MemberRepository;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -44,9 +44,9 @@ public class MemberService{
         return memberRepository.findByEmail(email);
     }
   
-    public Iterable<MemberResponseDto> getAllMembers() {
+    public Iterable<TokenResponse> getAllMembers() {
         return memberRepository.findAll().stream()
-                .map(member -> MemberResponseDto.builder()
+                .map(member -> TokenResponse.builder()
                     .name(member.getName())
                     .build())
                 .collect(Collectors.toList());
@@ -92,7 +92,7 @@ public class MemberService{
         return a.getName().equals(b.getName());
     }
 
-    public MemberResponseDto login(MemberRequestDto request) {
+    public TokenResponse login(MemberRequestDto request) {
         Member member = memberRepository.findByName(request.getName()).orElseThrow(() ->
                 new BadCredentialsException("잘못된 계정정보입니다."));
 
@@ -107,7 +107,7 @@ public class MemberService{
 
         redisService.saveRefreshToken(memberDetails.getUsername(), refreshTokenValue);
 
-        return MemberResponseDto.builder()
+        return TokenResponse.builder()
                 .name(member.getName())
                 .accessToken(accessToken)
                 .refreshToken(refreshTokenValue)
@@ -116,7 +116,7 @@ public class MemberService{
 
     }
 
-    public MemberResponseDto refreshAccessToken(String userName, String refreshTokenValue) {
+    public TokenResponse refreshAccessToken(String userName, String refreshTokenValue) {
         if (jwtProvider.validateToken(refreshTokenValue)) {
             String tokenUserName = jwtProvider.getUserPk(refreshTokenValue);
             String refreshToken = redisService.getRefreshToken(userName);
@@ -124,7 +124,7 @@ public class MemberService{
             final String accessToken = jwtProvider.generateAccessToken((MemberDetails) memberDetailsService.loadUserByUsername(tokenUserName));
 
             if (userName.equals(tokenUserName) && refreshToken.equals(refreshTokenValue)) {
-                return MemberResponseDto.builder()
+                return TokenResponse.builder()
                         .name(userName)
                         .accessToken(accessToken)
                         .refreshToken(refreshTokenValue)

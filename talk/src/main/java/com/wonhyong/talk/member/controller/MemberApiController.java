@@ -3,10 +3,10 @@ package com.wonhyong.talk.member.controller;
 import com.wonhyong.talk.board.dto.CommentDto;
 import com.wonhyong.talk.board.dto.PostDto;
 import com.wonhyong.talk.member.domain.MemberDetails;
-import com.wonhyong.talk.member.dto.JwtRefreshRequestDto;
+import com.wonhyong.talk.member.dto.JwtRefreshRequest;
 import com.wonhyong.talk.member.dto.MemberDto;
 import com.wonhyong.talk.member.dto.MemberRequestDto;
-import com.wonhyong.talk.member.dto.MemberResponseDto;
+import com.wonhyong.talk.member.dto.TokenResponse;
 import com.wonhyong.talk.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -38,7 +38,7 @@ public class MemberApiController {
     }
 
     @GetMapping
-    public Iterable<MemberResponseDto> members() {
+    public Iterable<TokenResponse> members() {
         return memberService.getAllMembers();
     }
 
@@ -58,12 +58,12 @@ public class MemberApiController {
     }
 
     @PostMapping(value = "/login")
-    public ResponseEntity<MemberResponseDto> signIn(@RequestBody MemberRequestDto request) {
+    public ResponseEntity<TokenResponse> signIn(@RequestBody MemberRequestDto request) {
         return new ResponseEntity<>(memberService.login(request), HttpStatus.OK);
     }
 
     @PostMapping("/auth/refresh")
-    public ResponseEntity<MemberResponseDto> refreshAuthenticationToken(@RequestBody JwtRefreshRequestDto refreshRequest) {
+    public ResponseEntity<TokenResponse> refreshAuthenticationToken(@RequestBody JwtRefreshRequest refreshRequest) {
         try {
             return new ResponseEntity<>(memberService.refreshAccessToken(refreshRequest.getUserName(), refreshRequest.getRefreshToken()), HttpStatus.OK);
         } catch (Exception e) {
