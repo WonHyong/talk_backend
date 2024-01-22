@@ -6,7 +6,7 @@
     <!-- 로그 파일 이름 -->
     <property name="LOG_FILE_NAME" value="server_log"/>
     <!-- 로그 출력 패턴 -->
-    <property name="LOG_PATTERN" value="%d{yyyy-MM-dd HH:mm:ss} %-5level [%logger{0}] %m%n"/>
+    <property name="LOG_PATTERN" value="%d{yyyy-MM-dd-HH:mm:ss} %-6level [%logger{0}] %m%n"/>
     <!-- 로그 레벨 -->
     <!--
     	1) ERROR : 오류 메시지 표시
