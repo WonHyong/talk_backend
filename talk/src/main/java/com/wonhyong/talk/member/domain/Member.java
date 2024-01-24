@@ -4,6 +4,7 @@ import com.wonhyong.talk.board.model.Comment;
 import com.wonhyong.talk.board.model.Like;
 import com.wonhyong.talk.board.model.Post;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
 import lombok.*;
 
 import java.util.ArrayList;
@@ -25,6 +26,7 @@ public class Member {
 
     private String password;
 
+    @Email
     private String email;
 
     @Column(name = "authority")

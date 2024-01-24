@@ -12,10 +12,12 @@ import com.wonhyong.talk.Security.jwt.JwtProvider;
 import com.wonhyong.talk.member.repository.MemberRepository;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import org.antlr.v4.runtime.misc.Triple;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.data.util.Pair;
 
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -92,7 +94,7 @@ public class MemberService{
         return a.getName().equals(b.getName());
     }
 
-    public TokenResponse login(MemberRequestDto request) {
+    public Triple login(MemberRequestDto request) {
         Member member = memberRepository.findByName(request.getName()).orElseThrow(() ->
                 new BadCredentialsException("잘못된 계정정보입니다."));
 
@@ -107,12 +109,7 @@ public class MemberService{
 
         redisService.saveRefreshToken(memberDetails.getUsername(), refreshTokenValue);
 
-        return TokenResponse.builder()
-                .name(member.getName())
-                .accessToken(accessToken)
-                .refreshToken(refreshTokenValue)
-                .expiration(jwtProvider.extractExpiration(accessToken))
-                .build();
+        return new Triple(accessToken, refreshTokenValue, jwtProvider.extractExpiration(accessToken));
 
     }
 
@@ -127,7 +124,6 @@ public class MemberService{
                 return TokenResponse.builder()
                         .name(userName)
                         .accessToken(accessToken)
-                        .refreshToken(refreshTokenValue)
                         .expiration(jwtProvider.extractExpiration(accessToken))
                         .build();
             }

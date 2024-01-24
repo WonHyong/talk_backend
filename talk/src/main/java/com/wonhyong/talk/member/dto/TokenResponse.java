@@ -14,7 +14,6 @@ public class TokenResponse {
 
     private String name;
     private String accessToken;
-    private String refreshToken;
     private Date expiration;
 
 }
