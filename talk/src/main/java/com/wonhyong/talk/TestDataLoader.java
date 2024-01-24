@@ -40,9 +40,9 @@ public class TestDataLoader {
 
         memberRepository.saveAll(List.of(admin, user1, user2));
 
-        loadBoardData(10, admin);
-        loadBoardData(10, user1);
-        loadBoardData(10, user2);
+        loadBoardData(50, admin);
+        loadBoardData(50, user1);
+        loadBoardData(50, user2);
 
         loadCommentData(5, user2);
 
@@ -69,7 +69,7 @@ public class TestDataLoader {
 
         for (int i = 1; i <= size; i++) {
             Post post = Post.builder()
-                    .title("Title " + i)
+                    .title("Title " + i + ":" + writer.name)
                     .content("Content " + i)
                     .writer(writer)
                     .build();
@@ -88,7 +88,7 @@ public class TestDataLoader {
         for (Post target : targetPosts) {
             for (int i=1; i<=size; i++) {
                 Comment comment = Comment.builder()
-                        .content("comment " + i)
+                        .content("comment " + i + "in post: " + target.title)
                         .post(target)
                         .writer(writer)
                         .build();
