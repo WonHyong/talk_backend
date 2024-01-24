@@ -69,7 +69,7 @@ public class TestDataLoader {
 
         for (int i = 1; i <= size; i++) {
             Post post = Post.builder()
-                    .title("Title " + i + ":" + writer.name)
+                    .title("Title " + i + ":" + writer.getName())
                     .content("Content " + i)
                     .writer(writer)
                     .build();
@@ -88,7 +88,7 @@ public class TestDataLoader {
         for (Post target : targetPosts) {
             for (int i=1; i<=size; i++) {
                 Comment comment = Comment.builder()
-                        .content("comment " + i + "in post: " + target.title)
+                        .content("comment " + i + "in post: " + target.getTitle())
                         .post(target)
                         .writer(writer)
                         .build();
