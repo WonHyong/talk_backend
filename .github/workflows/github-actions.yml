@@ -11,7 +11,8 @@ permissions:
   contents: read
 
 jobs:
-  CI-CD:
+  build:
+    name: Build Maven
     runs-on: ubuntu-latest
     steps:
 
@@ -34,27 +35,6 @@ jobs:
         key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
         restore-keys: ${{ runner.os }}-m2
 
-    - name: Cache var-cache-apt
-      uses: actions/cache@v3
-      with:
-        path: var-cache-apt
-        key: var-cache-apt-${{ hashFiles('**/Dockerfile') }}
-    - name: Cache var-lib-apt
-      uses: actions/cache@v3
-      with:
-        path: var-lib-apt
-        key: var-lib-apt-${{ hashFiles('**/Dockerfile') }}
-    - name: inject var-cache-apt into docker
-      uses: reproducible-containers/buildkit-cache-dance@v2.1.3
-      with:
-        cache-source: var-cache-apt
-        cache-target: /var/cache/apt
-    - name: inject var-lib-apt into docker
-      uses: reproducible-containers/buildkit-cache-dance@v2.1.3
-      with:
-        cache-source: var-lib-apt
-        cache-target: /var/lib/apt
-
     # Source Enviornment variables
     - name: Set Environment variables
       run: |
@@ -66,10 +46,14 @@ jobs:
     - name: Build with Maven
       run: mvn -B package --file talk/pom.xml
 
+  deploy:
+    runs-on: ubuntu-latest
+    name: Docker image push & ec2 deploy
+    if: github.event_name == 'push'
+    steps:
     
-    # Docker
+    # Docker image
     - name: Set up Docker Buildx
-      if: github.event_name == 'push'
       uses: docker/setup-buildx-action@v3
 
     - name: Login to DockerHub
@@ -80,7 +64,6 @@ jobs:
         password: ${{secrets.DOCKER_PASSWORD}}
 
     - name: Docker build & push to hub
-      if: github.event_name == 'push'
       uses: docker/build-push-action@v5
       with:
         context: ./talk
@@ -91,7 +74,6 @@ jobs:
 
     # Deploy
     - name: Deploy to ec2
-      if: github.event_name == 'push'
       uses: appleboy/ssh-action@master
       with:
         host: ${{ secrets.HOST }}
@@ -119,8 +101,15 @@ jobs:
               exit 1
             fi
 
-    # Discord Noti
-    - name: Discord notification
-      uses: sarisia/actions-status-discord@v1
-      with:
-        webhook: ${{ secrets.DISCORD_WEBHOOK }}
+  notify:
+    name: Discord Notification
+    runs-on: ubuntu-latest
+    needs:
+      - build
+      - deploy
+    if: ${{ always() }}
+    steps:
+      - name: Discord Notify
+        uses: sarisia/actions-status-discord@v1
+        with:
+          webhook: ${{ secrets.DISCORD_WEBHOOK }}
