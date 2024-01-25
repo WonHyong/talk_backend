@@ -65,7 +65,7 @@ public class MemberApiController {
     }
 
     @PostMapping(value = "/login")
-    public ResponseEntity<TokenResponse> signIn(@Valid @RequestBody MemberRequestDto request, HttpServletResponse response) {
+    public ResponseEntity<TokenResponse> signIn(@RequestBody MemberRequestDto request, HttpServletResponse response) {
         Triple triple = memberService.login(request);
 
         TokenResponse tokenResponse = TokenResponse.builder().name(request.getName()).accessToken((String)triple.a).expiration((Date)triple.c).build();
