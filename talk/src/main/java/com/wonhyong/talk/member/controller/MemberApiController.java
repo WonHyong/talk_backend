@@ -32,7 +32,7 @@ public class MemberApiController {
     private final MemberService memberService;
 
     @PostMapping(value = "/new")
-    public ResponseEntity<String> create(@RequestBody MemberRequestDto memberRequestDto) {
+    public ResponseEntity<String> create(@Valid @RequestBody MemberRequestDto memberRequestDto) {
         if (memberService.findByName(memberRequestDto.getName()).isPresent()) {
             return new ResponseEntity<>("이미 사용중인 아이디입니다.", HttpStatus.CONFLICT);
         } else if (memberService.findByEmail(memberRequestDto.getEmail()).isPresent()) {
