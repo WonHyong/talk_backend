@@ -1,15 +1,15 @@
 package com.wonhyong.talk.member.service;
 
-import com.wonhyong.talk.security.jwt.JwtTokenService;
-import com.wonhyong.talk.security.jwt.JwtProvider;
+import com.wonhyong.talk.board.domain.Like;
 import com.wonhyong.talk.board.dto.CommentDto;
 import com.wonhyong.talk.board.dto.PostDto;
-import com.wonhyong.talk.board.model.Like;
 import com.wonhyong.talk.member.domain.Member;
 import com.wonhyong.talk.member.domain.MemberDetails;
 import com.wonhyong.talk.member.dto.MemberRequestDto;
 import com.wonhyong.talk.member.dto.TokenResponse;
 import com.wonhyong.talk.member.repository.MemberRepository;
+import com.wonhyong.talk.security.jwt.JwtProvider;
+import com.wonhyong.talk.security.jwt.JwtTokenService;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.antlr.v4.runtime.misc.Triple;

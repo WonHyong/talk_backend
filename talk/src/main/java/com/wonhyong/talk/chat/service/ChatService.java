@@ -1,10 +1,8 @@
 package com.wonhyong.talk.chat.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.wonhyong.talk.chat.dto.ChatMessage;
-import com.wonhyong.talk.chat.dto.ChatRoom;
-import com.wonhyong.talk.chat.entity.ChatMessageEntity;
-import com.wonhyong.talk.chat.entity.ChatRoomEntity;
+import com.wonhyong.talk.chat.domain.ChatMessage;
+import com.wonhyong.talk.chat.domain.ChatRoom;
 import com.wonhyong.talk.chat.repository.ChatMessageRepository;
 import com.wonhyong.talk.chat.repository.ChatRoomRepository;
 import jakarta.annotation.PostConstruct;
@@ -24,7 +22,7 @@ import java.util.stream.Collectors;
 public class ChatService {
 
     private final ObjectMapper objectMapper;
-    private Map<String, ChatRoom> chatRooms;
+    private Map<String, com.wonhyong.talk.chat.dto.ChatRoom> chatRooms;
 
     private final ChatRoomRepository chatRoomRepository;
     private final ChatMessageRepository chatMessageRepository;
@@ -32,54 +30,54 @@ public class ChatService {
     @PostConstruct
     private void init() {
         chatRooms = chatRoomRepository.findAll().stream()
-                .map(ChatRoomEntity::toModel)
+                .map(ChatRoom::toModel)
                 .collect(Collectors.toMap(
-                        ChatRoom::getRoomId,
+                        com.wonhyong.talk.chat.dto.ChatRoom::getRoomId,
                         room -> room,
                         (existing, replacement) -> existing,
                         LinkedHashMap::new));
     }
 
-    public List<ChatRoom.Response> findAllRooms() {
+    public List<com.wonhyong.talk.chat.dto.ChatRoom.Response> findAllRooms() {
         return chatRooms.values().stream()
-                .map(ChatRoom.Response::from)
+                .map(com.wonhyong.talk.chat.dto.ChatRoom.Response::from)
                 .collect(Collectors.toList());
     }
 
-    public Optional<ChatRoom> findRoomById(String roomId) {
+    public Optional<com.wonhyong.talk.chat.dto.ChatRoom> findRoomById(String roomId) {
         return Optional.ofNullable(chatRooms.get(roomId));
     }
 
-    public ChatRoom createRoom(String name) {
+    public com.wonhyong.talk.chat.dto.ChatRoom createRoom(String name) {
         String randomId = UUID.randomUUID().toString();
-        ChatRoom chatRoom = ChatRoom.builder()
+        com.wonhyong.talk.chat.dto.ChatRoom chatRoom = com.wonhyong.talk.chat.dto.ChatRoom.builder()
                 .roomId(randomId)
                 .name(name)
                 .build();
         chatRooms.put(randomId, chatRoom);
-        chatRoomRepository.save(ChatRoomEntity.from(chatRoom));
+        chatRoomRepository.save(ChatRoom.from(chatRoom));
         return chatRoom;
     }
 
-    public void handleMessageActions(WebSocketSession session, ChatMessage chatMessage) {
+    public void handleMessageActions(WebSocketSession session, com.wonhyong.talk.chat.dto.ChatMessage chatMessage) {
         String roomId = chatMessage.getRoomId();
-        ChatRoom room = findRoomById(roomId).orElseThrow(() ->
+        com.wonhyong.talk.chat.dto.ChatRoom room = findRoomById(roomId).orElseThrow(() ->
                 new IllegalArgumentException("NO ROOM ID FOR " + roomId));
 
-        if (chatMessage.getType().equals(ChatMessage.MessageType.ENTER)) {
+        if (chatMessage.getType().equals(com.wonhyong.talk.chat.dto.ChatMessage.MessageType.ENTER)) {
             enterRoom(session, room, chatMessage);
         }
 
         sendMessageToRoom(room, chatMessage);
-        chatMessageRepository.save(ChatMessageEntity.from(chatMessage));
+        chatMessageRepository.save(ChatMessage.from(chatMessage));
     }
 
-    private void enterRoom(WebSocketSession session, ChatRoom chatRoom, ChatMessage chatMessage) {
+    private void enterRoom(WebSocketSession session, com.wonhyong.talk.chat.dto.ChatRoom chatRoom, com.wonhyong.talk.chat.dto.ChatMessage chatMessage) {
         chatRoom.addSession(session);
         chatMessage.setMessage(chatMessage.getSender() + " entered");
     }
 
-    private void sendMessageToRoom(ChatRoom room, ChatMessage msg) {
+    private void sendMessageToRoom(com.wonhyong.talk.chat.dto.ChatRoom room, com.wonhyong.talk.chat.dto.ChatMessage msg) {
         List<WebSocketSession> toRemoveSessions = new ArrayList<>();
         room.getSessions().parallelStream().forEach(session -> {
             try {

@@ -1,6 +1,6 @@
 package com.wonhyong.talk.board.repository;
 
-import com.wonhyong.talk.board.model.Like;
+import com.wonhyong.talk.board.domain.Like;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

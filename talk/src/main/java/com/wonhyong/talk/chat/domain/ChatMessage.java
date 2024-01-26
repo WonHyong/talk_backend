@@ -1,6 +1,5 @@
-package com.wonhyong.talk.chat.entity;
+package com.wonhyong.talk.chat.domain;
 
-import com.wonhyong.talk.chat.dto.ChatMessage;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -10,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Table(name = "messages")
 @AllArgsConstructor
 @NoArgsConstructor
-public class ChatMessageEntity {
+public class ChatMessage {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -29,15 +28,15 @@ public class ChatMessageEntity {
     private String message;
 
     @Builder
-    private ChatMessageEntity(String type, String sender, String message, String room) {
+    private ChatMessage(String type, String sender, String message, String room) {
         this.type = type;
         this.sender = sender;
         this.message = message;
         this.room = room;
     }
 
-    public static ChatMessageEntity from(ChatMessage chatMessage) {
-        return ChatMessageEntity.builder()
+    public static ChatMessage from(com.wonhyong.talk.chat.dto.ChatMessage chatMessage) {
+        return ChatMessage.builder()
                 .type(chatMessage.getType().name())
                 .sender(chatMessage.getSender())
                 .message(chatMessage.getMessage())
