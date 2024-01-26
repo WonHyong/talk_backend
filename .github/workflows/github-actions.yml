@@ -1,4 +1,4 @@
-name: CI/CD
+name: Build Test
 
 # Event trigger
 on:
@@ -45,79 +45,12 @@ jobs:
     # MAVEN
     - name: Build with Maven
       run: mvn -B package --file talk/pom.xml
-
-  docker-hub:
-    runs-on: ubuntu-latest
-    name: Docker image push
-    needs: [ build ]
-    if: github.event_name == 'push'
-    steps:
-    
-    # Check out
-    - name: Checkout
-      uses: actions/checkout@v4
-    
-    # Docker image
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v3
-
-    - name: Login to DockerHub
-      if: github.event_name == 'push'
-      uses: docker/login-action@v3
-      with:
-        username: ${{ secrets.DOCKER_USERNAME }}
-        password: ${{secrets.DOCKER_PASSWORD}}
-
-    - name: Docker build & push to hub
-      uses: docker/build-push-action@v5
-      with:
-        context: ./talk
-        push: true
-        tags: ${{ secrets.DOCKER_REPO }}/lotalk:latest
-        cache-from: type=gha
-        cache-to: type=gha,mode=max
-
-  deploy:
-    runs-on: ubuntu-latest
-    name: Deploy
-    needs: [ docker-hub ]
-    steps:
-      # Deploy
-      - name: Deploy to ec2
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.HOST }}
-          username: ${{ secrets.USERNAME }}
-          port: 22
-          key: ${{ secrets.PRIVATE_KEY }}
-          script: |
-              sudo docker container prune -f
-              sudo docker pull ${{ secrets.DOCKER_REPO }}/lotalk
-
-              # Enviornment varialbes
-              echo "${{ secrets.ENVIRONMENT_VARS }}" >| .env
-              export $(grep -v '^#' .env | xargs -d '\n')
-
-              # docker-compose.yml
-              curl -L -O https://raw.githubusercontent.com/WonHyong/talk_backend/main/docker-compose.yml
-            
-              docker-compose up -d --build
-              docker image prune -f
-
-              ERROR_COUNT=$(docker-compose logs | grep -c ERROR)
-
-              if [ $ERROR_COUNT -gt 0 ]; then
-                echo "Found $ERROR_COUNT error(s) in container logs."
-                exit 1
-              fi
-
+ 
   notify:
     name: Discord Notification
     runs-on: ubuntu-latest
     needs:
       - build
-      - docker-hub
-      - deploy
     if: ${{ always() }}
     steps:
       - name: Discord Notify
