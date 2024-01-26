@@ -1,6 +1,10 @@
-FROM maven:3.8.5-openjdk-17
+FROM maven:3.8.5-openjdk-17-slim
+
 WORKDIR talk/
-COPY . .
-RUN mvn clean install
+
+COPY pom.xml .
+COPY src ./src
+
+RUN mvn install
 
 CMD mvn spring-boot:run

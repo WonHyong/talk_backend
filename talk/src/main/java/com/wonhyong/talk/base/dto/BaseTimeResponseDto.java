@@ -1,6 +1,6 @@
 package com.wonhyong.talk.base.dto;
 
-import com.wonhyong.talk.base.model.BaseTimeModel;
+import com.wonhyong.talk.base.domain.BaseTimeDomain;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -15,8 +15,8 @@ public abstract class BaseTimeResponseDto {
     private String createdDate;
     private String modifiedDate;
 
-    public BaseTimeResponseDto(BaseTimeModel baseTimeModel) {
-        this.createdDate = baseTimeModel.getCreatedDate().format(DateTimeFormatter.ofPattern(DATE_FORMAT_PATTERN));
-        this.modifiedDate = baseTimeModel.getModifiedDate().format(DateTimeFormatter.ofPattern(DATE_FORMAT_PATTERN));
+    public BaseTimeResponseDto(BaseTimeDomain baseTimeDomain) {
+        this.createdDate = baseTimeDomain.getCreatedDate().format(DateTimeFormatter.ofPattern(DATE_FORMAT_PATTERN));
+        this.modifiedDate = baseTimeDomain.getModifiedDate().format(DateTimeFormatter.ofPattern(DATE_FORMAT_PATTERN));
     }
 }

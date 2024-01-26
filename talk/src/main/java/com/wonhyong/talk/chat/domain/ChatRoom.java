@@ -1,6 +1,5 @@
-package com.wonhyong.talk.chat.entity;
+package com.wonhyong.talk.chat.domain;
 
-import com.wonhyong.talk.chat.dto.ChatRoom;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -12,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Table(name = "rooms")
 @AllArgsConstructor
 @NoArgsConstructor
-public class ChatRoomEntity {
+public class ChatRoom {
 
     @Id
     @Column(name = "room_id")
@@ -21,14 +20,14 @@ public class ChatRoomEntity {
     @Column(length = 50, nullable = false)
     private String name;
 
-    public ChatRoom toModel() {
-        return ChatRoom.builder()
+    public com.wonhyong.talk.chat.dto.ChatRoom toModel() {
+        return com.wonhyong.talk.chat.dto.ChatRoom.builder()
                 .roomId(roomId)
                 .name(name)
                 .build();
     }
 
-    public static ChatRoomEntity from(ChatRoom chatRoom) {
-        return new ChatRoomEntity(chatRoom.getRoomId(), chatRoom.getName());
+    public static ChatRoom from(com.wonhyong.talk.chat.dto.ChatRoom chatRoom) {
+        return new ChatRoom(chatRoom.getRoomId(), chatRoom.getName());
     }
 }

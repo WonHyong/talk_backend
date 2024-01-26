@@ -1,11 +1,10 @@
 package com.wonhyong.talk;
 
-import com.wonhyong.talk.board.model.Comment;
-import com.wonhyong.talk.board.model.Post;
+import com.wonhyong.talk.board.domain.Comment;
+import com.wonhyong.talk.board.domain.Post;
 import com.wonhyong.talk.board.repository.CommentRepository;
 import com.wonhyong.talk.board.repository.PostRepository;
-import com.wonhyong.talk.chat.dto.ChatRoom;
-import com.wonhyong.talk.chat.entity.ChatRoomEntity;
+import com.wonhyong.talk.chat.domain.ChatRoom;
 import com.wonhyong.talk.chat.repository.ChatRoomRepository;
 import com.wonhyong.talk.member.domain.Member;
 import com.wonhyong.talk.member.domain.Role;
@@ -101,10 +100,10 @@ public class TestDataLoader {
     }
 
     private void loadChatRoomData(int size) {
-        List<ChatRoom> sampleRooms = new ArrayList<>(size);
+        List<com.wonhyong.talk.chat.dto.ChatRoom> sampleRooms = new ArrayList<>(size);
 
         for (int i = 0; i < size; i++) {
-            ChatRoom room = ChatRoom.builder()
+            com.wonhyong.talk.chat.dto.ChatRoom room = com.wonhyong.talk.chat.dto.ChatRoom.builder()
                     .roomId(UUID.randomUUID().toString())
                     .name("test_room" + i)
                     .build();
@@ -112,7 +111,7 @@ public class TestDataLoader {
         }
 
         chatRoomRepository.saveAll(sampleRooms.stream()
-                .map(ChatRoomEntity::from)
+                .map(ChatRoom::from)
                 .collect(Collectors.toList()));
     }
 }

@@ -1,8 +1,8 @@
 package com.wonhyong.talk.board.service;
 
+import com.wonhyong.talk.board.domain.Like;
+import com.wonhyong.talk.board.domain.Post;
 import com.wonhyong.talk.board.dto.PostDto;
-import com.wonhyong.talk.board.model.Like;
-import com.wonhyong.talk.board.model.Post;
 import com.wonhyong.talk.board.repository.CommentRepository;
 import com.wonhyong.talk.board.repository.LikeRepository;
 import com.wonhyong.talk.board.repository.PostRepository;

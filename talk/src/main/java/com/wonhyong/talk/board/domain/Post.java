@@ -1,6 +1,6 @@
-package com.wonhyong.talk.board.model;
+package com.wonhyong.talk.board.domain;
 
-import com.wonhyong.talk.base.model.BaseTimeModel;
+import com.wonhyong.talk.base.domain.BaseTimeDomain;
 import com.wonhyong.talk.member.domain.Member;
 import jakarta.persistence.*;
 import lombok.*;
@@ -13,7 +13,7 @@ import java.util.List;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Post extends BaseTimeModel {
+public class Post extends BaseTimeDomain {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

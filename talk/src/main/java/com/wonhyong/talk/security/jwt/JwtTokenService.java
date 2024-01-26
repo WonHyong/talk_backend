@@ -1,4 +1,4 @@
-package com.wonhyong.talk.Redis.service;
+package com.wonhyong.talk.security.jwt;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -7,11 +7,11 @@ import org.springframework.stereotype.Service;
 import java.util.concurrent.TimeUnit;
 
 @Service
-public class RedisService {
+public class JwtTokenService {
     private final RedisTemplate<String, String> redisTemplate;
 
     @Autowired
-    public RedisService(RedisTemplate<String, String> redisTemplate) {
+    public JwtTokenService(RedisTemplate<String, String> redisTemplate) {
         this.redisTemplate = redisTemplate;
     }
 

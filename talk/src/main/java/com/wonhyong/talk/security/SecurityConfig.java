@@ -1,11 +1,10 @@
-package com.wonhyong.talk.Security.jwt;
+package com.wonhyong.talk.security;
 
 
+import com.wonhyong.talk.security.jwt.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -13,13 +12,13 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.access.ExceptionTranslationFilter;
 
 
 @EnableWebSecurity
 @Configuration
 @RequiredArgsConstructor
-public class SecurityConfig{
+public class SecurityConfig {
 
     private final JwtProvider jwtProvider;
 
@@ -37,17 +36,14 @@ public class SecurityConfig{
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/members/new", "/api/members/login", "/api/members", "/chat", "/ws/chat").permitAll()
                         .requestMatchers("/api/**").hasAnyRole("USER", "ADMIN")
-                        .anyRequest().authenticated())
-                // JWT 인증 필터 적용
-                .addFilterBefore(new JwtAuthenticationFilter(jwtProvider), UsernamePasswordAuthenticationFilter.class)
+                        .anyRequest().permitAll())
                 // 에러 핸들링
-                .exceptionHandling(exception -> exception.authenticationEntryPoint((request, response, authException) -> {
-                    // 인증문제가 발생했을 때 이 부분을 호출한다.
-                    response.setCharacterEncoding("utf-8");
-                    response.setStatus(HttpStatus.UNAUTHORIZED.value());
-                    response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-                    response.getWriter().write("인증되지 않은 사용자입니다.");
-                }));
+                .exceptionHandling(e -> e
+                        .accessDeniedHandler(new JwtAccessDeniedHandler())
+                        .authenticationEntryPoint(new JwtAuthenticationEntryPoint()))
+                // JWT 인증 필터 적용
+                .addFilterAfter(new JwtAuthenticationFilter(jwtProvider), ExceptionTranslationFilter.class)
+                .addFilterBefore(new JwtExceptionFilter(), JwtAuthenticationFilter.class);
 
         return http.build();
     }
