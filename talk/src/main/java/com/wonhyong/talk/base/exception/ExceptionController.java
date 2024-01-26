@@ -30,9 +30,4 @@ public class ExceptionController {
                 .getDefaultMessage();
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorMsg);
     }
-
-    @ExceptionHandler({Exception.class})
-    public ResponseEntity<String> handleUnknownExceptions(Exception e) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-    }
 }

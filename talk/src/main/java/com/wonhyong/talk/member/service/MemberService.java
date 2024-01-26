@@ -1,6 +1,7 @@
 package com.wonhyong.talk.member.service;
 
 import com.wonhyong.talk.Redis.service.RedisService;
+import com.wonhyong.talk.Security.jwt.JwtProvider;
 import com.wonhyong.talk.board.dto.CommentDto;
 import com.wonhyong.talk.board.dto.PostDto;
 import com.wonhyong.talk.board.model.Like;
@@ -8,7 +9,6 @@ import com.wonhyong.talk.member.domain.Member;
 import com.wonhyong.talk.member.domain.MemberDetails;
 import com.wonhyong.talk.member.dto.MemberRequestDto;
 import com.wonhyong.talk.member.dto.TokenResponse;
-import com.wonhyong.talk.Security.jwt.JwtProvider;
 import com.wonhyong.talk.member.repository.MemberRepository;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -17,7 +17,6 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.data.util.Pair;
 
 import java.util.Optional;
 import java.util.stream.Collectors;
