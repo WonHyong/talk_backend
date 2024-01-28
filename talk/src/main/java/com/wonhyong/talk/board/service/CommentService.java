@@ -1,8 +1,8 @@
 package com.wonhyong.talk.board.service;
 
+import com.wonhyong.talk.board.domain.Comment;
+import com.wonhyong.talk.board.domain.Post;
 import com.wonhyong.talk.board.dto.CommentDto;
-import com.wonhyong.talk.board.model.Comment;
-import com.wonhyong.talk.board.model.Post;
 import com.wonhyong.talk.board.repository.CommentRepository;
 import com.wonhyong.talk.member.domain.Member;
 import com.wonhyong.talk.member.domain.MemberDetails;

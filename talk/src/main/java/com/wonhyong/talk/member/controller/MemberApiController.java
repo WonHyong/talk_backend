@@ -3,17 +3,22 @@ package com.wonhyong.talk.member.controller;
 import com.wonhyong.talk.board.dto.CommentDto;
 import com.wonhyong.talk.board.dto.PostDto;
 import com.wonhyong.talk.member.domain.MemberDetails;
-import com.wonhyong.talk.member.dto.JwtRefreshRequestDto;
+import com.wonhyong.talk.member.dto.JwtRefreshRequest;
 import com.wonhyong.talk.member.dto.MemberDto;
 import com.wonhyong.talk.member.dto.MemberRequestDto;
-import com.wonhyong.talk.member.dto.MemberResponseDto;
+import com.wonhyong.talk.member.dto.TokenResponse;
 import com.wonhyong.talk.member.service.MemberService;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.antlr.v4.runtime.misc.Triple;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Date;
 
 
 @CrossOrigin
@@ -25,7 +30,7 @@ public class MemberApiController {
     private final MemberService memberService;
 
     @PostMapping(value = "/new")
-    public ResponseEntity<String> create(@RequestBody MemberRequestDto memberRequestDto) {
+    public ResponseEntity<String> create(@Valid @RequestBody MemberRequestDto memberRequestDto) {
         if (memberService.findByName(memberRequestDto.getName()).isPresent()) {
             return new ResponseEntity<>("이미 사용중인 아이디입니다.", HttpStatus.CONFLICT);
         } else if (memberService.findByEmail(memberRequestDto.getEmail()).isPresent()) {
@@ -38,7 +43,7 @@ public class MemberApiController {
     }
 
     @GetMapping
-    public Iterable<MemberResponseDto> members() {
+    public Iterable<TokenResponse> members() {
         return memberService.getAllMembers();
     }
 
@@ -58,12 +63,23 @@ public class MemberApiController {
     }
 
     @PostMapping(value = "/login")
-    public ResponseEntity<MemberResponseDto> signIn(@RequestBody MemberRequestDto request) {
-        return new ResponseEntity<>(memberService.login(request), HttpStatus.OK);
+    public ResponseEntity<TokenResponse> signIn(@RequestBody MemberRequestDto request, HttpServletResponse response) {
+        Triple triple = memberService.login(request);
+
+        TokenResponse tokenResponse = TokenResponse.builder().name(request.getName()).accessToken((String)triple.a).expiration((Date)triple.c).build();
+
+        Cookie cookie = new Cookie("refreshtoken", (String) triple.b);
+        cookie.setHttpOnly(true);
+        cookie.setPath("/");
+        cookie.setMaxAge(60 * 60 * 12);
+
+        response.addCookie(cookie);
+
+        return new ResponseEntity<>(tokenResponse, HttpStatus.OK);
     }
 
     @PostMapping("/auth/refresh")
-    public ResponseEntity<MemberResponseDto> refreshAuthenticationToken(@RequestBody JwtRefreshRequestDto refreshRequest) {
+    public ResponseEntity<TokenResponse> refreshAuthenticationToken(@RequestBody JwtRefreshRequest refreshRequest) {
         try {
             return new ResponseEntity<>(memberService.refreshAccessToken(refreshRequest.getUserName(), refreshRequest.getRefreshToken()), HttpStatus.OK);
         } catch (Exception e) {

@@ -41,9 +41,14 @@ services:
     environment:
       - TZ=Asia/Seoul
     volumes:
-      - /home/ec2-user/log:${BASE_DIR}
+      - ./app:${BASE_DIR}
     stdin_open: true
     tty: true
+    logging:
+      driver: awslogs
+      options:
+        awslogs-group: lotalk-logs
+        awslogs-stream: lotalk-logs
 
 volumes:
   redisdb:

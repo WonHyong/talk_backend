@@ -1,6 +1,6 @@
 package com.wonhyong.talk.board.repository;
 
-import com.wonhyong.talk.board.model.Post;
+import com.wonhyong.talk.board.domain.Post;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;

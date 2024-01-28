@@ -7,7 +7,7 @@ import lombok.Getter;
 @Getter
 @Builder
 @AllArgsConstructor
-public class JwtRefreshRequestDto {
+public class JwtRefreshRequest {
     private String userName;
     private String refreshToken;
 }

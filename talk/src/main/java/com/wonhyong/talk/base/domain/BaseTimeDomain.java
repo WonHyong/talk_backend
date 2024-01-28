@@ -1,4 +1,4 @@
-package com.wonhyong.talk.base.model;
+package com.wonhyong.talk.base.domain;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;
@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
 @Getter
-public abstract class BaseTimeModel {
+public abstract class BaseTimeDomain {
 
     @CreatedDate
     @Column(name = "created_date", nullable = false)
