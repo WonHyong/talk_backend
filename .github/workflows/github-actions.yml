@@ -94,7 +94,7 @@ jobs:
             sudo docker container prune -f
             sudo docker pull ${{ secrets.DOCKER_REPO }}/lotalk
             
-            # Enviornment varialbes
+            # Environment variables
             echo "${{ secrets.ENVIRONMENT_VARS }}" >| .env
             export $(grep -v '^#' .env | xargs -d '\n')
             

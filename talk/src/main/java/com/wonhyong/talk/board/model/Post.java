@@ -1,4 +1,4 @@
-package com.wonhyong.talk.board.domain;
+package com.wonhyong.talk.board.model;
 
 import com.wonhyong.talk.base.domain.BaseTimeDomain;
 import com.wonhyong.talk.member.domain.Member;

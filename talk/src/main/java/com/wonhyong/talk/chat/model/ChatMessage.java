@@ -1,4 +1,4 @@
-package com.wonhyong.talk.chat.domain;
+package com.wonhyong.talk.chat.model;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

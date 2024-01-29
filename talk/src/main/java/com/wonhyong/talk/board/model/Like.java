@@ -1,4 +1,4 @@
-package com.wonhyong.talk.board.domain;
+package com.wonhyong.talk.board.model;
 
 import com.wonhyong.talk.base.domain.BaseTimeDomain;
 import com.wonhyong.talk.member.domain.Member;
@@ -8,30 +8,24 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Table(name = "comments")
+@Table(name = "likes")
 @Entity
 @Getter
-@Builder
-@AllArgsConstructor
 @NoArgsConstructor
-public class Comment extends BaseTimeDomain {
+@AllArgsConstructor
+@Builder
+public class Like extends BaseTimeDomain {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @Column
-    private String content;
-
     @ManyToOne
     @JoinColumn(name = "post_id")
     private Post post;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne
     @JoinColumn(name = "member_id")
-    private Member writer;
+    private Member member;
 
-    public void update(String content) {
-        this.content = content;
-    }
 }

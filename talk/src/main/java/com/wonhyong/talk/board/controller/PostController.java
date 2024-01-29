@@ -6,8 +6,6 @@ import com.wonhyong.talk.member.domain.MemberDetails;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,10 +24,8 @@ public class PostController {
     }
 
     @GetMapping("/{id}")
-    public PostDto.DetailResponse getPostById(@PathVariable Long id,
-                                              @AuthenticationPrincipal MemberDetails member) {
-        postService.increaseView(id);
-        return postService.findById(member, id);
+    public PostDto.DetailResponse getPostById(@PathVariable Long id) {
+        return postService.findById(id);
     }
 
     @PostMapping
@@ -39,13 +35,10 @@ public class PostController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<PostDto.DetailResponse> updatePost(@PathVariable Long id,
+    public PostDto.DetailResponse updatePost(@PathVariable Long id,
                                                              @Valid @RequestBody PostDto.Request postRequestDto,
-                                                             @AuthenticationPrincipal MemberDetails member) throws Exception {
-
-        return (postService.isExistById(id)) ?
-                ResponseEntity.status(HttpStatus.CREATED).body(postService.create(member, postRequestDto))
-                : ResponseEntity.status(HttpStatus.OK).body(postService.update(id, member, postRequestDto));
+                                                             @AuthenticationPrincipal MemberDetails member) {
+        return postService.update(id, member, postRequestDto);
     }
 
     @PostMapping("/{id}/like")
@@ -56,7 +49,7 @@ public class PostController {
 
     @DeleteMapping("/{id}")
     public void deletePost(@PathVariable Long id,
-                           @AuthenticationPrincipal MemberDetails member) throws Exception {
+                           @AuthenticationPrincipal MemberDetails member) {
         postService.delete(id, member);
     }
 }

@@ -1,7 +1,5 @@
 package com.wonhyong.talk.member.controller;
 
-import com.wonhyong.talk.board.dto.CommentDto;
-import com.wonhyong.talk.board.dto.PostDto;
 import com.wonhyong.talk.member.domain.MemberDetails;
 import com.wonhyong.talk.member.dto.JwtRefreshRequest;
 import com.wonhyong.talk.member.dto.MemberDto;
@@ -45,21 +43,6 @@ public class MemberApiController {
     @GetMapping
     public Iterable<TokenResponse> members() {
         return memberService.getAllMembers();
-    }
-
-    @GetMapping("/likes")
-    public Iterable<PostDto.ListResponse> getLikedPosts(@RequestParam String name) {
-        return memberService.getLikePosts(name);
-    }
-
-    @GetMapping("/posts")
-    public Iterable<PostDto.ListResponse> getWrotePosts(@RequestParam String name) {
-        return memberService.getWritePosts(name);
-    }
-
-    @GetMapping("/comments")
-    public Iterable<CommentDto.Response> getWroteComments(@RequestParam String name) {
-        return memberService.getWriteComments(name);
     }
 
     @PostMapping(value = "/login")
