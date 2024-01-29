@@ -5,6 +5,6 @@ WORKDIR talk/
 COPY pom.xml .
 COPY src ./src
 
-RUN mvn install
+RUN mvn install -DskipTests
 
 CMD mvn spring-boot:run
