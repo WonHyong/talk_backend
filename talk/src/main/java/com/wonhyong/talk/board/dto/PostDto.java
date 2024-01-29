@@ -1,11 +1,16 @@
 package com.wonhyong.talk.board.dto;
 
 import com.wonhyong.talk.base.dto.BaseTimeResponseDto;
-import com.wonhyong.talk.board.domain.Post;
+import com.wonhyong.talk.board.model.Like;
+import com.wonhyong.talk.board.model.Post;
+import com.wonhyong.talk.member.dto.MemberDto;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 
 public class PostDto {
@@ -27,23 +32,30 @@ public class PostDto {
         private String title;
         private String content;
         private String writer;
-        private int like;
         private int view;
-        private int numComment;
+        private List<CommentDto.Response> comments;
+        private List<MemberDto> likedMembers;
 
-        private DetailResponse(Post post, int like, int numComment) {
+        private DetailResponse(Post post) {
             super(post);
             this.id = post.getId();
             this.title = post.getTitle();
             this.content = post.getContent();
             this.writer = post.getWriter().getName();
-            this.like = like;
             this.view = post.getView();
-            this.numComment = numComment;
+
+            this.comments = post.getComments().stream()
+                    .map(CommentDto.Response::from)
+                    .collect(Collectors.toList());
+
+            this.likedMembers = post.getLikes().stream()
+                    .map(Like::getMember)
+                    .map(MemberDto::from)
+                    .collect(Collectors.toList());
         }
 
-        public static DetailResponse from(Post post, int like, int numComment) {
-            return new DetailResponse(post, like, numComment);
+        public static DetailResponse from(Post post) {
+            return new DetailResponse(post);
         }
     }
 
@@ -69,10 +81,6 @@ public class PostDto {
 
         public static ListResponse from(Post post, int like, int numComment) {
             return new ListResponse(post, like, numComment);
-        }
-
-        public static ListResponse from(Post post) {
-            return new ListResponse(post, post.getLikes().size(), post.getComments().size());
         }
     }
 }

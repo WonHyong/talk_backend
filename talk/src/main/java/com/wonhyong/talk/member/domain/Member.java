@@ -1,8 +1,8 @@
 package com.wonhyong.talk.member.domain;
 
-import com.wonhyong.talk.board.domain.Comment;
-import com.wonhyong.talk.board.domain.Like;
-import com.wonhyong.talk.board.domain.Post;
+import com.wonhyong.talk.board.model.Comment;
+import com.wonhyong.talk.board.model.Like;
+import com.wonhyong.talk.board.model.Post;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import lombok.*;

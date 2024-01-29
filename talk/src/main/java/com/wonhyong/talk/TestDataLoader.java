@@ -1,10 +1,10 @@
 package com.wonhyong.talk;
 
-import com.wonhyong.talk.board.domain.Comment;
-import com.wonhyong.talk.board.domain.Post;
+import com.wonhyong.talk.board.model.Comment;
+import com.wonhyong.talk.board.model.Post;
 import com.wonhyong.talk.board.repository.CommentRepository;
 import com.wonhyong.talk.board.repository.PostRepository;
-import com.wonhyong.talk.chat.domain.ChatRoom;
+import com.wonhyong.talk.chat.model.ChatRoom;
 import com.wonhyong.talk.chat.repository.ChatRoomRepository;
 import com.wonhyong.talk.member.domain.Member;
 import com.wonhyong.talk.member.domain.Role;
@@ -39,9 +39,9 @@ public class TestDataLoader {
 
         memberRepository.saveAll(List.of(admin, user1, user2));
 
-        loadBoardData(50, admin);
-        loadBoardData(50, user1);
-        loadBoardData(50, user2);
+        loadBoardData(10, admin);
+        loadBoardData(20, user1);
+        loadBoardData(30, user2);
 
         loadCommentData(5, user2);
 

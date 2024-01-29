@@ -1,22 +1,22 @@
 package com.wonhyong.talk.board.service;
 
-import com.wonhyong.talk.board.domain.Like;
-import com.wonhyong.talk.board.domain.Post;
 import com.wonhyong.talk.board.dto.PostDto;
+import com.wonhyong.talk.board.model.Like;
+import com.wonhyong.talk.board.model.Post;
 import com.wonhyong.talk.board.repository.CommentRepository;
 import com.wonhyong.talk.board.repository.LikeRepository;
 import com.wonhyong.talk.board.repository.PostRepository;
 import com.wonhyong.talk.member.domain.Member;
 import com.wonhyong.talk.member.domain.MemberDetails;
-import lombok.NonNull;
+import com.wonhyong.talk.member.domain.Role;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.NoSuchElementException;
 
 @Service
@@ -35,33 +35,15 @@ public class PostService {
             return PostDto.ListResponse.from(post, like, commentNum);});
     }
 
-    @Transactional(readOnly = true)
-    public boolean isExistById(@NonNull Long id) {
-        return postRepository.existsById(id);
-    }
-
-    @Transactional(readOnly = true)
-    public PostDto.DetailResponse findById(MemberDetails member, @NonNull Long id) throws NoSuchElementException {
+    @Transactional
+    public PostDto.DetailResponse findById(Long id) {
         Post post = findPostById(id);
-
-        // Check already liked
-        List<Like> likes = post.getLikes();
-        int like = (likes.stream().anyMatch(l -> l.getMember().equals(member.getMember())))?
-                likes.size() * -1
-                : likes.size();
-
-        int commentNum = commentRepository.countAllByPost_Id(post.getId());
-
-        return PostDto.DetailResponse.from(post, like, commentNum);
-    }
-
-    @Transactional
-    public void increaseView(@NonNull Long id) {
         postRepository.increaseView(id);
+        return PostDto.DetailResponse.from(post);
     }
 
     @Transactional
-    public PostDto.DetailResponse create(MemberDetails member, @NonNull PostDto.Request postDto) throws NoSuchElementException {
+    public PostDto.DetailResponse create(MemberDetails member, PostDto.Request postDto) {
         Member currentUser = member.getMember();
 
         Post post = Post.builder()
@@ -70,26 +52,23 @@ public class PostService {
                 .writer(currentUser)
                 .build();
 
-        postRepository.save(post);
-
-        return PostDto.DetailResponse.from(post, 0, 0);
+        return PostDto.DetailResponse.from(postRepository.save(post));
     }
 
     @Transactional
-    public PostDto.DetailResponse update(Long id, MemberDetails member, @NonNull PostDto.Request postDto) throws NoSuchElementException, UsernameNotFoundException, IllegalAccessException {
+    public PostDto.DetailResponse update(Long id, MemberDetails member, PostDto.Request postDto) {
         Post post = findPostById(id);
         Member currentUser = member.getMember();
 
         checkIsWriter(currentUser, post.getWriter());
 
         post.update(postDto.getTitle(), postDto.getContent());
-        postRepository.save(post);
 
-        return findById(member, id);
+        return PostDto.DetailResponse.from(postRepository.save(post));
     }
 
     @Transactional
-    public void delete(Long id, MemberDetails member) throws NoSuchElementException, UsernameNotFoundException, IllegalAccessException {
+    public void delete(Long id, MemberDetails member) throws NoSuchElementException, UsernameNotFoundException {
         Post post = findPostById(id);
         Member currentUser = member.getMember();
 
@@ -99,7 +78,7 @@ public class PostService {
     }
 
     @Transactional
-    public boolean increaseLike(@NonNull Long id, MemberDetails member) {
+    public boolean increaseLike(Long id, MemberDetails member) {
         if (likeRepository.existsByPost_IdAndMember_Id(id, member.getId())) {
             return false;
         }
@@ -122,9 +101,9 @@ public class PostService {
                 new NoSuchElementException("NO POST FOR " + id));
     }
 
-    private void checkIsWriter(Member currentUser, Member writer) throws IllegalAccessException {
-        if (!currentUser.equals(writer)) {
-            throw new IllegalAccessException("NO PERMISSION");
+    private void checkIsWriter(Member currentUser, Member writer) {
+        if (!currentUser.equals(writer) && !currentUser.getRole().equals(Role.ADMIN)) {
+            throw new AccessDeniedException("");
         }
     }
 }

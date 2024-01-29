@@ -1,8 +1,5 @@
 package com.wonhyong.talk.member.service;
 
-import com.wonhyong.talk.board.domain.Like;
-import com.wonhyong.talk.board.dto.CommentDto;
-import com.wonhyong.talk.board.dto.PostDto;
 import com.wonhyong.talk.member.domain.Member;
 import com.wonhyong.talk.member.domain.MemberDetails;
 import com.wonhyong.talk.member.dto.MemberRequestDto;
@@ -14,7 +11,6 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.antlr.v4.runtime.misc.Triple;
 import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -50,34 +46,6 @@ public class MemberService{
                 .map(member -> TokenResponse.builder()
                     .name(member.getName())
                     .build())
-                .collect(Collectors.toList());
-    }
-
-    public Iterable<PostDto.ListResponse> getLikePosts(@NonNull String name) {
-        Member user = memberRepository.findByName(name).orElseThrow(() ->
-                new UsernameNotFoundException("NO USER FOR " + name));
-
-        return user.getLikes().stream()
-                .map(Like::getPost)
-                .map(PostDto.ListResponse::from)
-                .collect(Collectors.toList());
-    }
-
-    public Iterable<PostDto.ListResponse> getWritePosts(String name) {
-        Member user = memberRepository.findByName(name).orElseThrow(() ->
-                new UsernameNotFoundException("NO USER FOR " + name));
-
-        return user.getPosts().stream()
-                .map(PostDto.ListResponse::from)
-                .collect(Collectors.toList());
-    }
-
-    public Iterable<CommentDto.Response> getWriteComments(String name) {
-        Member user = memberRepository.findByName(name).orElseThrow(() ->
-                new UsernameNotFoundException("NO USER FOR " + name));
-
-        return user.getComments().stream()
-                .map(CommentDto.Response::from)
                 .collect(Collectors.toList());
     }
 

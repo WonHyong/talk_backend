@@ -1,8 +1,8 @@
 package com.wonhyong.talk.chat.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.wonhyong.talk.chat.domain.ChatMessage;
-import com.wonhyong.talk.chat.domain.ChatRoom;
+import com.wonhyong.talk.chat.model.ChatMessage;
+import com.wonhyong.talk.chat.model.ChatRoom;
 import com.wonhyong.talk.chat.repository.ChatMessageRepository;
 import com.wonhyong.talk.chat.repository.ChatRoomRepository;
 import jakarta.annotation.PostConstruct;
