@@ -5,15 +5,16 @@ import com.wonhyong.talk.board.model.Comment;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 
 public class CommentDto {
 
     @Getter
-    @RequiredArgsConstructor
+    @NoArgsConstructor
     public static class Request {
         @NotBlank(message = "댓글 내용이 필요합니다.")
-        private final String content;
+        private String content;
     }
 
     @Getter
