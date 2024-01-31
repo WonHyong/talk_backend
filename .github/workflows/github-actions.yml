@@ -127,6 +127,9 @@ jobs:
           cond: ${{ contains(needs.*.result, 'failure') }}
           if_true: "Failure"
           if_false: "Success"
+      - name: Print job results
+        run: |
+          echo "${{ needs.*.result }}"
       - name: Discord Notify
         uses: sarisia/actions-status-discord@v1
         with:
