@@ -124,9 +124,9 @@ jobs:
         uses: haya14busa/action-cond@v1
         id: action_condition
         with:
-          cond: ${{ needs.*.result == 'success' }}
-          if_true: "Success"
-          if_false: "Failure"
+          cond: ${{ contains(needs.*.result, 'failure') }}
+          if_true: "Failure"
+          if_false: "Success"
       - name: Discord Notify
         uses: sarisia/actions-status-discord@v1
         with:
