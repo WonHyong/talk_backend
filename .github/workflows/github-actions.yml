@@ -127,8 +127,16 @@ jobs:
           cond: ${{ contains(needs.*.result, 'failure') }}
           if_true: "Failure"
           if_false: "Success"
+          
       - name: Print job results
         run: |
-          echo "${{ needs.build.result }}"
-          echo "${{ needs.deploy.result }}"
+          echo "build: ${{ needs.build.result }}"
+          echo "docker push: ${{ needs.docker-hub.result }}"
+          echo "deploy: ${{ needs.deploy.result }}"
 
+      - name: Discord Notify
+        uses: sarisia/actions-status-discord@v1
+        with:
+          webhook: ${{ secrets.DISCORD_WEBHOOK }}
+          title: ${{ github.event_name }}
+          status: ${{ steps.action_condition.outputs.value }}
