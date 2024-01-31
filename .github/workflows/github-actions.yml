@@ -77,7 +77,7 @@ jobs:
           cache-to: type=gha,mode=max
 
   deploy:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     name: Deploy
     needs: [ docker-hub ]
     steps:
@@ -120,7 +120,16 @@ jobs:
       - deploy
     if: ${{ always() }}
     steps:
+      - name: Check actions's conditions
+        uses: haya14busa/action-cond@v1
+        id: action_condition
+        with:
+          cond: ${{ needs.*.result }}
+          if_true: "Success"
+          if_false: "Failure"
       - name: Discord Notify
         uses: sarisia/actions-status-discord@v1
         with:
           webhook: ${{ secrets.DISCORD_WEBHOOK }}
+          title: ${{ github.event_name }}
+          status: ${{ steps.action_condition.outputs.value }}
